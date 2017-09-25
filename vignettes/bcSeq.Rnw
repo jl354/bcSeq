@@ -1,0 +1,630 @@
+\documentclass[9pt,xcolor=x11names,compress]{beamer}
+\usetheme{Rochester}
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage[round]{natbib}
+\renewcommand{\newblock}{}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{bcSeq}
+\usepackage{bm}
+\newcommand{\pkgname}{\texttt{bcSeq}}
+\newcommand{\Rcpp}{\texttt{Rcpp}}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{enumerate item}{\insertenumlabel}
+\setbeamertemplate{enumerate subitem}{\alph{enumii}.}
+\renewcommand{\Pr}[1]{\mathbb P(#1)}
+\newcommand{\Ev}[1]{\mathbb E(#1)}
+\newcommand{\bI}{\mathbb I}
+\newcommand{\lr}{\mathbcal{\altr}}
+\newcommand{\ATGC}{\mathrm{A, T, G, C}}
+\newcommand{\ellr}{\rho{:}\lambda}
+\newcommand{\Yt}{\tilde{Y}}
+\newcommand{\R}{R}
+\renewcommand{\r}{r}
+\newcommand{\Rt}{\tilde{R}}
+\newcommand{\rt}{\tilde{r}}
+\newcommand{\rtvec}{\bm{\rt}}
+\newcommand{\rvec}{\bm{\r}}
+\newcommand{\Renv}{\texttt{R}}
+\newcommand{\eg}{{\tt e.g.}}
+\newcommand{\Cpp}{C++}
+\newcommand{\pkg}{{\tt bcSeq}}
+\newcommand{\ijtoL}[3]{{#1}_{#2,1},\ldots,{#1}_{#2,#3}}
+\newcommand{\jtoL}[2]{{#1}_{1},\ldots,{#1}_{#2}}
+\lstset{language=C++,
+basicstyle=\ttfamily,
+keywordstyle=\color{blue}\ttfamily,
+stringstyle=\color{red}\ttfamily,
+commentstyle=\color{green}\ttfamily,
+morecomment=[l][\color{magenta}]{\#}
+}
+
+\begin{document}
+<<setup1, include=FALSE>>=
+require(knitr)
+@
+<<setup2, include=FALSE>>=
+options(width=80)  # make the printing fit on the page
+set.seed(1121)     # make the results repeatable
+stdt<-date()
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title page
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \title{\pkgname}
+    \subtitle{Fast Sequence Alignment for High-throughput shRNA and CRISPR
+Screens}
+    \author{Jiaxing Lin \and Jeremy Gresham \and Tongrong Wang \and So Young
+Kim \and James Alvarez \and Jeffrey S. Damrauer \and Scott Floyd \and Joshua
+Granek \and Andrew Allen \and Cliburn Chan \and Jichun Xie \and Kouros Owzar}
+    \date{2017-09-20}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+    \tableofcontents[]
+\end{frame}
+\small
+
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Introduction page 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Introduction}
+This document provides comprehensive instructions and examples for using the
+\pkgname{} package to perform alignment of CRISPR or shRNA reads to a library
+of sequences. The alignment is based on a 'Trie' data structure, a tree like
+data structure for fast searching.  The algorithm is implemented in C++,
+and ported to \R{} by \Rcpp{}. \\
+Features of this package include:
+\begin{enumerate}
+    \item $O(N\bar{m})$ computational complexity (where $N$ is the number of
+    sequence reads in the sample, and $\bar{m}$ is the average read length.)
+    \item Short sequences alignment that can be applied
+    to barcode matching and similar problems.
+    \item Allows errors during the alignment. Supports both hamming and
+    edit distance matching with constraints.
+    \item Alignment qualities are evaluated and ambiguous alignments are
+    resolved using Bayes' classifier.
+    \item Support for user-defined matching probability models in evaluating
+    the alignment quality.
+\end{enumerate}
+Note: using the 'Trie' data structure only unique barcode sequences in the
+library are kept.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bcseq_hamming arguments specfication page 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_hamming}
+<<bcSeq, eval=FALSE>>=
+bcSeq_hamming(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
+    numThread = 4, count_only = TRUE)
+@
+\pkgname{}\_hamming can be used for performing alignment using 
+hamming distance.
+\vspace{3mm}
+Function arguments:\\
+\begin{description}
+    \item[\texttt{sampleFile}:] (string) sample filename, needs to be a
+    fastq file
+    \item[\texttt{libFile}:] (string) library filename, needs to be a fasta
+    or fastq file.
+    \item[\texttt{outFile}:] (string) output filename.
+    \item[\texttt{misMatch}:] (integer) the number of maximum mismatches
+    or indels allowed in the alignment.
+    \item[\texttt{tMat}:] (two column dataframe) prior probability of a
+    mismatch given a sequence. The first column is the prior sequence,
+    the second column is the prior error probability. The default values of
+    prior error probability for all different sequences are 1/3.
+    \item[\texttt{numThread}:] (integer) the number of threads for parallel
+    computing. The default is 4.
+\end{description}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bcseq_hamming arguments specfication page 4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_hamming}
+Function arguments continued:\\
+\begin{description}
+\item[\texttt{count\_only}:]
+(bool) option for function returns (default is \texttt{TRUE}). If set to
+\texttt{FALSE}, returns a list contains a vector of read IDs, and a vector of
+barcode IDs, and an alignment probability matrix between
+all the reads and barcodes.
+The vectors of read/barcode IDs serve as the row and column names for the
+alignment probability matrix respectively. Examples of the probability matrix
+are provided in the example section. Note that the probability matrix is a
+sparse matrix.
+\end{description}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bcseq_hamming return specfication page 5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_hamming Return Values}
+Function returns:
+\begin{description}
+\item[\texttt{default}:]
+A csv count table is created and written to user specified file.
+The .csv file contains two columns, the first column is the sequences of the
+barcodes, and the second columns is the number
+of reads that aligned to the barcodes. A list containing a vector of read IDs
+and barcode IDs is returned to R.
+\end{description}
+Extra optional returns:\\
+\begin{description}
+\item[\texttt{count\_only = FALSE}:]
+If set to \texttt{FALSE}, \pkgname{} will return a sparse matrix in the list
+containing the vectors of read IDs and barcode IDs. The rows of the matrix
+correspond to the vector of read IDs, and the columns correspond to the
+vector of barcode IDs.
+\end{description}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%bcseq_edit argument specfication page 6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_edit}
+<<bcSeq_edit, eval=FALSE>>=
+bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
+    numThread = 4, count_only = TRUE, userProb = NULL,
+    gap_left = 2, ext_left = 1, gap_right = 2,
+    ext_right = 1, pen_max = 5)
+@
+\pkgname{}\_edit can be used for performing alignment using edit distance.
+\vspace{3mm}
+Function arguments for \pkgname{}\_edit:\\
+\begin{description}
+    \item[\texttt{sampleFile}:] (string) sample filename, needs to be a
+    fastq file
+    \item[\texttt{libFile}:] (string) library filename, needs to be a fasta
+    or fastq file.
+    \item[\texttt{outFile}:] (string) output filename.
+    \item[\texttt{misMatch}:] (integer) the number of maximum mismatches
+    allowed in the alignment.
+    \item[\texttt{tMat}:]
+    (two column dataframe) prior probability of a mismatch given a sequence.
+    The first column is the prior sequence, the second column is the
+    error rate. The default value for all prior sequences is 1/3.
+    \item[\texttt{numThread}:] (integer) the number of threads for
+    parallel computing, default to be 4.
+\end{description}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%bcseq_edit argument specfication page 7
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_edit}
+Function arguments continued:\\
+\begin{description}
+\item[\texttt{count\_only}:]
+(bool) option for function returns (default is \texttt{TRUE}). If set to
+\texttt{FALSE}, returns a list contains a vector of read IDs, and a vector of
+barcode IDs, and an alignment probability matrix between
+all the reads and barcodes.
+The vectors of read/barcode IDs serve as the row and column names for the
+alignment probability matrix respectively. Examples of the probability matrix
+are provided in the example section. Note that the probability matrix is a
+sparse matrix.
+\item[\texttt{userProb}:]
+(function) an vectorized R function taking three arguments:
+\texttt{userProb(max\_pen, prob, pen\_val)}, \texttt{max\_pen} is the maximum
+penalty allowed, \texttt{prob} is a vector containing the combined
+match/misMatch probabilities for each unique alignment between a given read
+and barcode, \texttt{pen\_val} is a vector containing total penalties for the
+reads and barcodes in the same order. \texttt{userProb} is a way for the user
+to control which alignments are considered. The default value is \texttt{NULL},
+indicating the alignment probabilities are to be computed following the model
+presented in the Alignment Probability Model section and a comprehensive 
+example is given there.
+\end{description}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%bcseq_edit argument specfication page 8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_edit function}
+Extra function arguments for tuning alignment based on edit distance:\\
+\begin{description}
+    \item[\texttt{gap\_left}:] (double) Penalty score for deleting a base
+    for the reads.
+    \item[\texttt{ext\_left}:] (double) Penalty score for extending a deletion
+    of base for the reads.
+    \item[\texttt{gap\_right}:] (double) Penalty score for inserting a base
+    \item[\texttt{ext\_right}:] (double) Penalty score for extending an 
+    insertion
+    \item[\texttt{pen\_max}:] (double) Maximum penalty allowed for any 
+    alignment
+\end{description}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%bcseq_edit return specfication page 9
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\pkgname{}\_edit Return Values}
+Function returns:
+\begin{description}
+\item[\texttt{default}:]
+A csv count table is created and written to user specified file.
+The .csv file contains two columns, the first column is the sequences of the
+barcodes, and the second columns is the number
+of reads that aligned to the barcodes. A list containing a vector of read IDs
+and barcode IDs is returned to R.
+\end{description}
+Extra optional returns:\\
+\begin{description}
+\item[\texttt{count\_only = FALSE}:]
+If set to \texttt{FALSE}, \pkgname{} will return a sparse matrix in the list
+containing the vectors of read IDs and barcode IDs. The rows of the matrix
+correspond to the vector of read IDs, and the columns correspond to the
+vector of barcode IDs.
+\end{description}
+\end{frame}
+
+\section{Examples}
+\subsection{Example Data}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% example dummy data page 10
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Example Library and Read simulation}
+\scriptsize
+Generating a library fasta file:
+<<genlib, eval=TRUE>>=
+lFName    <- "./libFile.fasta"
+bases     <- c(rep('A', 4), rep('C',4), rep('G',4), rep('T',4))
+numOfBars <- 7
+Barcodes  <- rep(NA, numOfBars*2)
+for (i in 1:numOfBars){
+    Barcodes[2*i-1] <- paste0(">barcode_ID: ", i)
+    Barcodes[2*i]   <- paste(sample(bases, length(bases)), collapse = '')
+}
+write(Barcodes, lFName)
+@
+Generating a read fastq file:
+\scriptsize
+<<genRead, eval=TRUE>>=
+rFName     <- "./readFile.fastq"
+numOfReads <- 8
+Reads      <- rep(NA, numOfReads*4)
+for (i in 1:numOfReads){
+    Reads[4*i-3] <- paste0("@read_ID_",i)
+    Reads[4*i-2] <- Barcodes[2*sample(1:numOfBars,1,
+        replace=TRUE, prob=seq(1:numOfBars))]
+    Reads[4*i-1] <- "+"
+    Reads[4*i]   <- paste(rawToChar(as.raw(
+        33+sample(20:30, length(bases),replace=TRUE))),
+        collapse='')
+}
+write(Reads, rFName)
+@
+\end{frame}
+
+\subsection{Example of Using \pkgname{}\_hamming}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% example of using bcSeq_hamming page 11
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Alignment by \pkgname{}\_hamming}
+\scriptsize
+Alignment using default mapping probability and output
+<<defaultAlign>>=
+library(Matrix)
+library(bcSeq)
+ReadFile <- "./readFile.fastq"
+BarFile  <- "./libFile.fasta"
+outFile  <- "./count.csv"
+res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
+    tMat = NULL, numThread = 4, count_only = TRUE )
+@
+The function writes the read counts to a .csv file, the file name
+can be set through argument {\tt outFile}.
+\scriptsize
+<<defaultOutput>>=
+res <- read.csv(outFile, header=FALSE)
+res[1:3,]
+@
+There are two columns in the output .csv file, the first column is the
+barcode sequence, and the second column is the corresponding number of
+reads aligned to the barcode.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% example of using bcSeq_hamming with options page 12
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Alignment using \pkgname{}\_hamming with Optional
+Return}
+\scriptsize
+The package also provides an option for the user to output more detailed
+information for the alignments. The current version can return the
+alignment probability between the reads and the barcodes by setting argument
+{\tt count\_only} to "FALSE".
+<<custAlign>>=
+outFile  <- "./count2.csv"
+bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
+    numThread = 4,count_only=FALSE )
+@
+<<clear,echo=FALSE>>=
+system("rm *csv")
+@
+\end{frame}
+
+\subsection{Example of Using \pkgname{}\_edit}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% example of using bcSeq_edit page 13
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Alignment by \pkgname{}\_edit}
+\scriptsize
+Alignment using default mapping probability and output format
+<<defaultAlign2>>=
+res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
+    tMat = NULL, numThread = 4, count_only = TRUE,
+    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+    pen_max = 7)
+@
+The function writes the read counts to a .csv file, the file name
+can be set through argument {\tt outFile}.
+\scriptsize
+<<defaultOutput2>>=
+res <- read.csv(outFile, header=FALSE)
+res[1:3,]
+@
+There are two columns in the output .csv file, the first column is the
+barcode sequence, and the second column is the corresponding number of
+reads aligned to the barcode.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% example of using bcSeq_edit with options page 14
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Alignment using \pkgname{}\_edit with
+Optional Return}
+\scriptsize
+The package also provides an option for the user to output more detailed
+information for the alignments. The current version can return the
+alignment probability between the reads and the barcodes by setting argument
+{\tt count\_only} to "FALSE".
+<<echo=FALSE>>=
+system("rm *csv")
+@
+<<custAlign2>>=
+outFile  <- "./count2.csv"
+bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
+    numThread = 4, count_only = FALSE, gap_left = 2, ext_left = 1,
+    gap_right = 2, ext_right = 1, pen_max = 5)
+@
+<<clear2,echo=FALSE>>=
+system("rm *fastq *fasta *csv")
+@
+\end{frame}
+
+\section{General Alignment Probability Model}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% alignment probability model page 15
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{General Alignment Probability Model in \pkgname{}}
+Let $\Pr{\rtvec^k|\rvec}:=\Pr{\Rt=\rtvec^k|\R=\rvec}$ denote the probability
+that the read originated from barcode $k$, with the corresponding sequence
+$\rtvec^k$, given that the sequence of the observed read is
+$\rvec=[\r_1,\ldots,\r_L]$. \pkg{} models the joint probability distribution of
+the originating reads conditional on the corresponding observed reads,
+$\Pr{\rtvec^k|\rvec}$, under the assumption of conditional independence, as
+\begin{align*}
+\Pr{\rtvec^k|\rvec} & = \Pr{\Rt=\rtvec^k|\R=\rvec} \\
+    & = \Pr{\Rt=[\jtoL{\rt}{L}]|\R=[\jtoL{\r}{L}]} \\
+    & = \prod_{i=1}^L \Pr{\Rt_j=\rt_j|\R=[\jtoL{\r}{L}]} \\
+    & = \prod_{i=1}^L \Pr{\Rt_j=\rt_j|\R_j=\r_j}. \\
+\end{align*}
+The marginal conditional probability is modeled as
+\begin{equation*}
+    \Pr{\Rt_j=\rt_j|\R_j=\r_j} =
+    \begin{cases}
+        1-\epsilon_j,&\rt_j=\r_j\\
+        \frac{\epsilon_j}{3}&\rt_j\ne\r_j,
+    \end{cases}
+\end{equation*}
+where $\epsilon_j= 10^{-q_j/10}$ is the base-calling error probability
+corresponding to the observed Phred score $q_j$.
+\end{frame}
+
+\section{User-defined Alignment Probability Model}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% user defined probability model page 16
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{User defined Alignment Probability}
+\pkgname{} provides two approches for the user to defined their own
+alignment probability
+\begin{itemize}
+    \item User-defined Marginal Conditional Probability
+    \item User-defined $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$
+\end{itemize}
+\end{frame}
+\subsection{User-defined Prior Probability}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% user defined probability model page 17
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{User-defined Marginal Conditional Probability}
+Redefine marginal conditional probability:
+\begin{align*}
+    &\Pr{\Rt_j=\rt_j|\R_j=\r_j} \\
+    \equiv&\Pr{\Rt_j=\rt_j|\R_j=[\r_{j-n},\ldots,\r_j]} \\
+    =&
+    \begin{cases}
+        1-\epsilon_j,&\rt_j=\r_j\\
+        f(\epsilon_j)_{\r_{j-n},\ldots,\r_j} &\rt_j\ne\r_j,
+    \end{cases}
+\end{align*}
+This definition assumes that suquences before position $j$ has influence on the
+error rate. The option can be actived by providing a dataframe to the argument
+\texttt{tMat}. The first column of this dataframe is a vector of sequences 
+$[\r_{j-n},\ldots,\r_j]$ and the second column is the corresponding 
+value of $f(\epsilon_j)_{[\r_{j-n},\ldots,\r_j]}$.  If a sequence is not 
+in the dataframe the default values $\frac{\epsilon_j}{3}$ are used.
+\end{frame}
+
+\subsection{User-defined $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$} \label{userP}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% user defined probability model page 18
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{User-defined $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$}
+\small
+Customized $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$ are also supported by \pkgname{} for
+bcSeq\_edit. The user can define a function \texttt{userProb} to compute the
+alignment score. \texttt{userProb} is a vectorized R function taking three
+arguments: \texttt{userProb(max\_pen, prob, pen\_val)}, \texttt{max\_pen} is
+the maximum penalty allowed, \texttt{prob} is a vector containing the combined
+match/misMatch probabilities for each unique alignment between a given read
+and barcode, \texttt{pen\_val} is a vector containing total penalties for the
+reads and barcodes in the same order. \texttt{userProb} is a way for the user
+to control which alignments are considered.
+\scriptsize
+<<comtomizeP,eval=FALSE>>=
+comstomizeP <- function(max_pen, prob, pen_val)
+{
+    prob * (1 - log(2) + log(1 + max_pen / (max_pen + pen_val) ) )
+}
+bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
+    numThread = 4, count_only = TRUE, userProb = comstomizeP,
+    gap_left = 2, ext_left = 1, gap_right = 2,
+    ext_right = 1, pen_max = 5)
+@
+\small
+Note: the using of user-defined $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$ can add extra
+computation time. As defined here, \texttt{customizeP} is equivalent to
+the default model.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% run MAGeCK data page 20
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Practical Example}
+\begin{frame}[fragile]{Practical Alignment Example}
+The sequencing library used in the benchmarking analysis can be 
+downloaded from the MAGeCK website:\\
+\url{ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR376/ERR376998/ERR376998.fastq.gz}\\
+The reference barcode library can also be downloaded from Kosuke Yusa 
+laboratory:\\
+\url{https://www.nature.com/nbt/journal/v32/n3/extref/nbt.2800-S7.xlsx}\\
+\begin{verbatim}
+get read and library file 
+wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR376/ERR376998/ERR376998.fastq.gz 
+-P ./src/
+wget https://www.nature.com/nbt/journal/v32/n3/extref/nbt.2800-S7.xlsx 
+-P ./src
+\end{verbatim}
+Process library data to fasta format
+<<eval=FALSE>>=
+library(gdata)
+x <- read.xls("./nbt.2800-S7.xlsx")
+fName <- "./libgRNA.fasta"
+size <- nrow(x)
+for(i in 1:size){
+    cat(">seq ID","\n",file=fName, append=TRUE)
+    cat(as.character(x$gRNA.sequence[i]),"\n", file=fName, append=TRUE)}
+fName <- "./libgRNA.csv"
+size <- nrow(x)
+for(i in 1:size){
+    cat(as.character(x$gRNA.sequence[i]),"\n", file=fName, append=TRUE)}
+@
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% run MAGeCK data page 21
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Practical Alignment Example}
+Unzip the reads and trim the adaptor
+\begin{verbatim}
+gunzip ERR376998.fastq.gz
+\end{verbatim}
+Ad hoc C++ function for trimming adaptor (\texttt{trimMAGeCK.cpp})
+\scriptsize
+\begin{lstlisting}
+#include <iostream>
+#include <fstream>
+using namespace std;
+int main(int argc, char *argv[]){   
+    int length = 0;
+    string line;
+    ifstream myfile (argv[1]);
+    ofstream outfile (argv[2]);
+    if (myfile.is_open()){
+        while ( getline (myfile,line) ){
+            outfile << line <<endl;     
+            getline (myfile,line);
+            length = line.length() - 31;
+            outfile << line.substr(23, length) <<endl;
+            getline (myfile,line);
+            outfile << line <<endl;
+            getline (myfile,line);
+            outfile << line.substr(23, length) <<endl;}
+        myfile.close();}
+    return 0;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Practical Alignment Example}
+Ad hoc C++ function to remove duplicated barcodes (\texttt{uniqueBar.cpp})
+\scriptsize
+\begin{lstlisting}
+#include <iostream>
+#include <fstream>
+#include <unordered_set>
+using namespace std;
+int main(int argc, char *argv[]){
+    int length = 0; string line;
+    std::unordered_set<std::string> myset;
+    ifstream myfile (argv[1]); ofstream outfile (argv[2]);
+    if (myfile.is_open()){
+        while ( getline (myfile,line) )
+            getline (myfile,line); myset.insert(line);
+        myfile.close();}
+    for(const std::string& x: myset)
+        outfile << ">fake ID "<<x<< endl<<x<<endl; 
+    return 0;
+}
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Practical Alignment Example}
+Compile trim code and trim adoptor 
+\begin{verbatim}
+g++ -std=c++11 trimMAGeCK.cpp -o trim.exe
+./trim.exe ERR376998.fastq ERR376998_trimed.fastq
+\end{verbatim}
+Remove duplicated barcodes
+\begin{verbatim}
+g++ -std=c++11 uniqueBar.cpp -o uniBar.exe
+./uniBar.exe ./libgRNA.fasta ./libgRNAUni.fasta
+mv libgRNAUni.fasta libgRNA.fasta
+\end{verbatim}
+Perform alignment
+<<eval=FALSE>>=
+library(bcSeq)
+readFileName  <- "ERR376998_trimed.fastq"
+libFileName   <- "libgRNA.fasta"
+alignedFile   <- "SampleAligned.txt"
+bcSeq_hamming(readFileName, libFileName, alignedFile, misMatch = 2,
+    tMat = NULL, numThread = 4, count_only = TRUE)
+@
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section informaiton page 21
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Session Information}
+\begin{frame}[fragile]{Session Information}
+<<sessinfo, echo=FALSE, include=TRUE, results='asis'>>=
+toLatex(sessionInfo(), locale=FALSE)
+@
+<<times, echo=FALSE, include=TRUE>>=
+print(paste("Start Time",stdt))
+print(paste("End Time  ",date()))
+@
+\end{frame}
+\end{document}

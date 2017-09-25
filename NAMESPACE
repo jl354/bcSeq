@@ -1,0 +1,5 @@
+export(bcSeq_hamming)
+export(bcSeq_edit)
+useDynLib(bcSeq)
+importFrom(Rcpp, evalCpp)
+import(Matrix)
