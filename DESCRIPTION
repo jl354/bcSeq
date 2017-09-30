@@ -1,7 +1,7 @@
 Package: bcSeq
 Type: Package
 Title: Fast Sequence Alignment for High-throughput shRNA and CRISPR Screens
-Version: 0.99.1
+Version: 0.99.2
 Date: 2017-09-20
 Author@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
             email = "jiaxing.lin@duke.edu"), 
