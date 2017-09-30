@@ -40,7 +40,7 @@ auto Trie::fromLibrary(const vector<string>& library) -> void
 }
 
 // Method for creating count table for barcodes in the library
-// from the reads to barcode alignment results.
+// from the alignment results.
 auto Trie::count(vector<res_t>& results,
     vector<double>& countTable)
     -> void

@@ -153,7 +153,7 @@ void user_alignment(Trie& trie, vector<string>& sequence, vector<string>& phredS
 
   for (int i = L; i < R; i++)
   {
-    //auto s = results.size(); //warning from clang variable not used 
+    //auto s = results.size(); //warning from clang variable not used
     phred2err(cError, phredScore[i]);
     trie.edit(0, i, misMatch, 0.0, sequence[i], cError, results);
   }
@@ -221,7 +221,7 @@ void alignmentH(Trie& trie, vector<string>& sequence,
 }
 
 
-//[[Rcpp::export(matching)]]
+//[[Rcpp::export]]
 SEXP CRISPR_matching(String sampleFile,
                      String libFile,
                      String outFile,
@@ -329,7 +329,7 @@ SEXP CRISPR_matching(String sampleFile,
 }
 
 
-//[[Rcpp::export(user_matching)]]
+//[[Rcpp::export]]
 SEXP CRISPR_user_matching(String sampleFile,
                           String libFile,
                           String outFile,
@@ -360,6 +360,261 @@ SEXP CRISPR_user_matching(String sampleFile,
   if( !(readSamples(sampleFile, sequence, sequence_ids, phredScore) &&
         trie.setTMat(tMatSeq, tMatProb)                             &&
         readLibrary(library, library_ids, libFile)                    ) )
+  {return R_NilValue;}
+
+  auto countTable = vector<double>(library.size());
+
+  // create trie with library elements
+  trie.fromLibrary(library);
+
+  mutex mut;
+  vector<res_t> all_res;
+
+  // run alignment
+  try {
+
+    int nr_item = sequence.size();
+    int nr_item_per_thread = ceil(nr_item * 1.0 / numThread);
+
+    Rcpp::Rcout << "Running" << " levenshtein search with " << nr_item_per_thread
+         << " sequences per thread in " << numThread
+         << " threads" << endl;
+
+    for(int i = 1; i < numThread; ++i)
+    {
+        int R = min((i+1)*nr_item_per_thread, nr_item);
+        threads.emplace_back(user_alignment,  std::ref(trie), std::ref(sequence),
+                             std::ref(phredScore), misMatch,
+                             std::ref(countTable), i * nr_item_per_thread, R,
+                             std::ref(all_res), std::ref(mut), count_only);
+    }
+
+    int R = min(nr_item_per_thread, nr_item);
+    user_alignment(trie, sequence, phredScore, misMatch,
+          countTable, 0, R, all_res, mut, count_only);
+
+    for(auto &t : threads)
+    {
+         t.join();
+    }
+
+  } catch( Rcpp::exception& e )
+  {
+    Rcpp::Rcout << e.what() << endl;
+    return R_NilValue;
+  }
+
+
+  clean(trie, all_res, tForm);
+
+  trie.count(all_res, countTable);
+
+  Rcpp::Rcout << "Compiling results\n";
+
+  count2CSV(countTable, library, outFile);
+
+  if( !count_only )
+  {
+    Rcpp::Rcout << "Generating dataframe\n";
+    IntegerVector readIdx;
+    IntegerVector bcIdx;
+    auto prob = vector<double>();
+
+    for( auto& x: all_res )
+    {
+      readIdx.push_back(std::get<0>(x));
+      bcIdx.push_back(std::get<1>(x));
+      prob.push_back(std::get<3>(x));
+    }
+
+    return List::create(List::create(Named("reads") = sequence_ids,
+                                     Named("barcodes") = library_ids),
+                        List::create(Named("i") = readIdx,
+                                     Named("j") = bcIdx,
+                                     Named("x") = prob,
+                                     Named("index1") = false));
+  }
+
+  return List::create(Named("reads") = sequence_ids,
+                      Named("barcodes") = library_ids);
+}
+
+
+
+//[[Rcpp::export]]
+SEXP CRISPR_matching_DNAString(Rcpp::StringVector readSeq,
+                     Rcpp::StringVector readSeq_ids,
+                     Rcpp::StringVector readPhred,
+                     Rcpp::StringVector libSeq,
+                     Rcpp::StringVector libSeq_ids,
+                     String outFile,
+                     int misMatch,
+                     Rcpp::StringVector tMatSeq,
+                     Rcpp::NumericVector tMatProb,
+                     int numThread,
+                     bool hamming,
+                     bool count_only,
+                     double gap_left,
+                     double ext_left,
+                     double gap_right,
+                     double ext_right,
+                     double pen_max)
+{
+  // read in fastq file and store sequence and phred score as vector string.
+  auto sequence     = vector<string>(),
+       sequence_ids = vector<string>(),
+       phredScore   = vector<string>(),
+       library      = vector<string>(),
+       library_ids  = vector<string>();
+
+  // read in reads and library barcode from input
+  for(int i = 0; i < readSeq.size(); i++)
+  {
+     sequence[i]      = readSeq[i];
+     sequence_ids[i]  = readSeq_ids[i];
+     phredScore[i]    = readPhred [i];
+  }
+
+  for(int i = 0; i < libSeq.size(); i++)
+  {
+     library[i]    = libSeq[i];
+     libSeq_ids[i] = libSeq_ids[i];
+  }
+
+  auto threads = std::vector<thread>();
+  auto match   = hamming ? alignmentH : alignment;
+
+  Trie trie(gap_left, ext_left, gap_right, ext_right, pen_max);
+
+  // read samples, library, and setup trie's tMat
+  //if( !(readSamples(sampleFile, sequence, sequence_ids, phredScore) &&
+  //      trie.setTMat(tMatSeq, tMatProb)                             &&
+  //      readLibrary(library, library_ids, libFile)                    ) )
+  if(trie.setTMat(tMatSeq, tMatProb)) 
+  {return R_NilValue;}
+
+  auto countTable = vector<double>(library.size());
+
+  // create trie with library elements
+  trie.fromLibrary(library);
+
+  mutex mut;
+  vector<res_t> all_res;
+
+  // run alignment
+  try {
+
+    int nr_item = sequence.size();
+    int nr_item_per_thread = ceil(nr_item * 1.0 / numThread);
+
+    Rcpp::Rcout << "Running" << (hamming? " hamming search" : " levenshtein search")
+         << " with " << nr_item_per_thread
+         << " sequences per thread in " << numThread
+         << " threads" << endl;
+
+    for(int i = 1; i < numThread; ++i)
+    {
+        int R = min((i+1)*nr_item_per_thread, nr_item);
+        threads.emplace_back(match,  std::ref(trie), std::ref(sequence),
+                             std::ref(phredScore), misMatch,
+                             std::ref(countTable), i * nr_item_per_thread, R,
+                             std::ref(all_res), std::ref(mut), count_only);
+    }
+
+    int R = min(nr_item_per_thread, nr_item);
+    match(trie, sequence, phredScore, misMatch,
+          countTable, 0, R, all_res, mut, count_only);
+
+    for(auto &t : threads)
+    {
+         t.join();
+    }
+
+  } catch( Rcpp::exception& e )
+  {
+    Rcpp::Rcout << e.what() << endl;
+    return R_NilValue;
+  }
+
+  Rcpp::Rcout << "Compiling results\n";
+
+  count2CSV(countTable, library, outFile);
+
+  if( !count_only )
+  {
+    Rcpp::Rcout << "Generating dataframe\n";
+    IntegerVector readIdx;
+    IntegerVector bcIdx;
+    auto prob = vector<double>();
+
+    for( auto& x: all_res )
+    {
+      readIdx.push_back(std::get<0>(x));
+      bcIdx.push_back(std::get<1>(x));
+      prob.push_back(std::get<3>(x));
+    }
+
+    return List::create(List::create(Named("reads") = sequence_ids,
+                                     Named("barcodes") = library_ids),
+                        List::create(Named("i") = readIdx,
+                                     Named("j") = bcIdx,
+                                     Named("x") = prob,
+                                     Named("index1") = false));
+  }
+
+  return List::create(Named("reads") = sequence_ids,
+                      Named("barcodes") = library_ids);
+}
+
+
+//[[Rcpp::export]]
+SEXP CRISPR_user_matching_DNAString(Rcpp::StringVector readSeq,
+                          Rcpp::StringVector readSeq_ids,
+                          Rcpp::StringVector readPhred,
+                          Rcpp::StringVector libSeq,
+                          Rcpp::StringVector libSeq_ids,
+                          String outFile,
+                          int misMatch,
+                          Rcpp::StringVector tMatSeq,
+                          Rcpp::NumericVector tMatProb,
+                          int numThread,
+                          bool count_only,
+                          double gap_left,
+                          double ext_left,
+                          double gap_right,
+                          double ext_right,
+                          double pen_max,
+                          Function tForm)
+{
+  // read in fastq file and store sequence and phred score as vector string.
+  auto sequence     = vector<string>(),
+       sequence_ids = vector<string>(),
+       phredScore   = vector<string>(),
+       library      = vector<string>(),
+       library_ids  = vector<string>();
+
+  for(int i = 0; i < readSeq.size(); i++)
+  {
+     sequence[i]      = readSeq[i];
+     sequence_ids[i]  = readSeq_ids[i];
+     phredScore[i]    = readPhred [i];
+  }
+
+  for(int i = 0; i < libSeq.size(); i++)
+  {
+     library[i]    = libSeq[i];
+     libSeq_ids[i] = libSeq_ids[i];
+  }
+  
+  auto threads = std::vector<thread>();
+
+  Trie trie(gap_left, ext_left, gap_right, ext_right, pen_max);
+
+  // read samples, library, and setup trie's tMat
+  //if( !(readSamples(sampleFile, sequence, sequence_ids, phredScore) &&
+  //      trie.setTMat(tMatSeq, tMatProb)                             &&
+  //      readLibrary(library, library_ids, libFile)                    ) )
+  if(trie.setTMat(tMatSeq, tMatProb))
   {return R_NilValue;}
 
   auto countTable = vector<double>(library.size());

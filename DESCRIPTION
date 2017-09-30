@@ -41,7 +41,7 @@ Description: This Rcpp-based package implements a highly efficient
 License: GPL (>= 2)
 biocViews: Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
 URL: https://bitbucket.org/impactp01/bcSeq
-Imports: Rcpp (>= 0.12.12), Matrix
+Imports: Rcpp (>= 0.12.12), Matrix, Biostrings
 LinkingTo: Rcpp, Matrix
 Suggests: knitr
 VignetteBuilder: knitr

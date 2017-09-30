@@ -106,15 +106,16 @@ library are kept.
 bcSeq_hamming(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = TRUE)
 @
-\pkgname{}\_hamming can be used for performing alignment using 
+\pkgname{}\_hamming can be used for performing alignment using
 hamming distance.
 \vspace{3mm}
 Function arguments:\\
 \begin{description}
-    \item[\texttt{sampleFile}:] (string) sample filename, needs to be a
-    fastq file
-    \item[\texttt{libFile}:] (string) library filename, needs to be a fasta
-    or fastq file.
+    \item[\texttt{sampleFile}:] (string or DNAStringSet) If a string it is the
+    sample filename and needs to be a fastq file.
+    \item[\texttt{libFile}:] (string or DNAStringSet) If a string it is the 
+    library filename, needs to be a fasta
+    or fastq file.  libFile and sampleFile must have the same type.
     \item[\texttt{outFile}:] (string) output filename.
     \item[\texttt{misMatch}:] (integer) the number of maximum mismatches
     or indels allowed in the alignment.
@@ -182,10 +183,11 @@ bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
 \vspace{3mm}
 Function arguments for \pkgname{}\_edit:\\
 \begin{description}
-    \item[\texttt{sampleFile}:] (string) sample filename, needs to be a
-    fastq file
-    \item[\texttt{libFile}:] (string) library filename, needs to be a fasta
-    or fastq file.
+    \item[\texttt{sampleFile}:] (string or DNAStringSet) If a string it is the
+    sample filename and needs to be a fastq file.
+    \item[\texttt{libFile}:] (string or DNAStringSet) If a string it is the 
+    library filename, needs to be a fasta
+    or fastq file.  libFile and sampleFile must have the same type.
     \item[\texttt{outFile}:] (string) output filename.
     \item[\texttt{misMatch}:] (integer) the number of maximum mismatches
     allowed in the alignment.
@@ -222,7 +224,7 @@ and barcode, \texttt{pen\_val} is a vector containing total penalties for the
 reads and barcodes in the same order. \texttt{userProb} is a way for the user
 to control which alignments are considered. The default value is \texttt{NULL},
 indicating the alignment probabilities are to be computed following the model
-presented in the Alignment Probability Model section and a comprehensive 
+presented in the Alignment Probability Model section and a comprehensive
 example is given there.
 \end{description}
 \end{frame}
@@ -238,9 +240,9 @@ Extra function arguments for tuning alignment based on edit distance:\\
     \item[\texttt{ext\_left}:] (double) Penalty score for extending a deletion
     of base for the reads.
     \item[\texttt{gap\_right}:] (double) Penalty score for inserting a base
-    \item[\texttt{ext\_right}:] (double) Penalty score for extending an 
+    \item[\texttt{ext\_right}:] (double) Penalty score for extending an
     insertion
-    \item[\texttt{pen\_max}:] (double) Maximum penalty allowed for any 
+    \item[\texttt{pen\_max}:] (double) Maximum penalty allowed for any
     alignment
 \end{description}
 \end{frame}
@@ -462,9 +464,9 @@ Redefine marginal conditional probability:
 \end{align*}
 This definition assumes that suquences before position $j$ has influence on the
 error rate. The option can be actived by providing a dataframe to the argument
-\texttt{tMat}. The first column of this dataframe is a vector of sequences 
-$[\r_{j-n},\ldots,\r_j]$ and the second column is the corresponding 
-value of $f(\epsilon_j)_{[\r_{j-n},\ldots,\r_j]}$.  If a sequence is not 
+\texttt{tMat}. The first column of this dataframe is a vector of sequences
+$[\r_{j-n},\ldots,\r_j]$ and the second column is the corresponding
+value of $f(\epsilon_j)_{[\r_{j-n},\ldots,\r_j]}$.  If a sequence is not
 in the dataframe the default values $\frac{\epsilon_j}{3}$ are used.
 \end{frame}
 
@@ -505,17 +507,17 @@ the default model.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Practical Example}
 \begin{frame}[fragile]{Practical Alignment Example}
-The sequencing library used in the benchmarking analysis can be 
+The sequencing library used in the benchmarking analysis can be
 downloaded from the MAGeCK website:\\
 \url{ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR376/ERR376998/ERR376998.fastq.gz}\\
-The reference barcode library can also be downloaded from Kosuke Yusa 
+The reference barcode library can also be downloaded from Kosuke Yusa
 laboratory:\\
 \url{https://www.nature.com/nbt/journal/v32/n3/extref/nbt.2800-S7.xlsx}\\
 \begin{verbatim}
-get read and library file 
-wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR376/ERR376998/ERR376998.fastq.gz 
+get read and library file
+wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR376/ERR376998/ERR376998.fastq.gz
 -P ./src/
-wget https://www.nature.com/nbt/journal/v32/n3/extref/nbt.2800-S7.xlsx 
+wget https://www.nature.com/nbt/journal/v32/n3/extref/nbt.2800-S7.xlsx
 -P ./src
 \end{verbatim}
 Process library data to fasta format
@@ -548,14 +550,14 @@ Ad hoc C++ function for trimming adaptor (\texttt{trimMAGeCK.cpp})
 #include <iostream>
 #include <fstream>
 using namespace std;
-int main(int argc, char *argv[]){   
+int main(int argc, char *argv[]){
     int length = 0;
     string line;
     ifstream myfile (argv[1]);
     ofstream outfile (argv[2]);
     if (myfile.is_open()){
         while ( getline (myfile,line) ){
-            outfile << line <<endl;     
+            outfile << line <<endl;
             getline (myfile,line);
             length = line.length() - 31;
             outfile << line.substr(23, length) <<endl;
@@ -586,13 +588,13 @@ int main(int argc, char *argv[]){
             getline (myfile,line); myset.insert(line);
         myfile.close();}
     for(const std::string& x: myset)
-        outfile << ">fake ID "<<x<< endl<<x<<endl; 
+        outfile << ">fake ID "<<x<< endl<<x<<endl;
     return 0;
 }
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Practical Alignment Example}
-Compile trim code and trim adoptor 
+Compile trim code and trim adoptor
 \begin{verbatim}
 g++ -std=c++11 trimMAGeCK.cpp -o trim.exe
 ./trim.exe ERR376998.fastq ERR376998_trimed.fastq
