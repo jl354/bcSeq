@@ -4,6 +4,7 @@
 #include <array>
 #include <memory>
 #include <iostream>
+#include <Rcpp.h>
 
 #include "SA.hpp"
 

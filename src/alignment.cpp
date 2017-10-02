@@ -125,6 +125,10 @@ auto SA::value() -> double
     case tag_t::D_Extension:
       return static_cast<AlignmentBase<D_Extension>*>(alignment.get())->value();
       break;
+    case tag_t::Nil:
+      Rcpp::cerr << "Alignment error, Nil encountered" << Rcpp::endl;
+      exit(1);
+      break;
   }
 }
 
@@ -146,5 +150,11 @@ auto SA::penalty(std::array<double, 4>& pen) -> double
     case tag_t::D_Extension:
       return static_cast<AlignmentBase<D_Extension>*>(alignment.get())->penalty(pen);
       break;
+    case tag_t::Nil:
+      Rcpp::cerr << "Alignment error, Nil encountered" << Rcpp::endl;
+      exit(1);
+      break;
   }
+
+  return ;
 }
