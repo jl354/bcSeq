@@ -130,6 +130,7 @@ auto SA::value() -> double
       return 0;
       break;
   }
+  return 0;
 }
 
 auto SA::penalty(std::array<double, 4>& pen) -> double
@@ -155,4 +156,5 @@ auto SA::penalty(std::array<double, 4>& pen) -> double
       return 0;
       break;
   }
+  return 0;
 }
