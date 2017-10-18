@@ -166,7 +166,8 @@ void user_alignment(Trie& trie, vector<string>& sequence, vector<string>& phredS
 
 void alignment(Trie& trie, vector<string>& sequence, vector<string>& phredScore,
               int misMatch, vector<double>& countTable, int L, int R,
-              vector<res_t>& all_res, mutex& mut, bool count_only)
+              vector<res_t>& all_res, mutex& mut, bool count_only, 
+              ostream& table_stream, bool detail_info)
 {
   auto cError = vector<double>();
   auto results = std::vector<res_t>();
@@ -182,8 +183,11 @@ void alignment(Trie& trie, vector<string>& sequence, vector<string>& phredScore,
     }
   }
 
-  trie.count(results, countTable);
-
+  if(count_only)
+    trie.count(results, countTable);
+  if(detail_info)
+    trie.count(results, countTable, table_stream); 
+ 
   if( !count_only )
   {
     lock_guard<mutex> l(mut);
@@ -195,7 +199,8 @@ void alignment(Trie& trie, vector<string>& sequence, vector<string>& phredScore,
 void alignmentH(Trie& trie, vector<string>& sequence,
                 vector<string>& phredScore, int misMatch,
                 vector<double>& countTable, int L, int R,
-                vector<res_t>& all_res, mutex& mut, bool count_only)
+                vector<res_t>& all_res, mutex& mut, bool count_only,
+                ostream& table_stream, bool detail_info)
 {
   auto cError = vector<double>();
   auto results = std::vector<res_t>();
@@ -205,8 +210,11 @@ void alignmentH(Trie& trie, vector<string>& sequence,
     phred2err(cError, phredScore[i]);
     trie.hamming(0, i, misMatch, 0.0, sequence[i], cError, results);
   }
-
-  trie.count(results, countTable);
+  
+  if(count_only)
+    trie.count(results, countTable);
+  if(detail_info)
+    trie.count(results, countTable, table_stream); 
 
   if( !count_only )
   {
@@ -235,7 +243,7 @@ SEXP CRISPR_matching(String sampleFile,
                      double ext_left,
                      double gap_right,
                      double ext_right,
-                     double pen_max)
+                     double pen_max, bool detail_info)
 {
   // read in fastq file and store sequence and phred score as vector string.
   auto sequence     = vector<string>(),
@@ -263,6 +271,9 @@ SEXP CRISPR_matching(String sampleFile,
   mutex mut;
   vector<res_t> all_res;
 
+  std::string table_out = outFile;
+  std::ofstream table_stream(table_out + ".txt");
+
   // run alignment
   try {
 
@@ -280,12 +291,13 @@ SEXP CRISPR_matching(String sampleFile,
         threads.emplace_back(match,  std::ref(trie), std::ref(sequence),
                              std::ref(phredScore), misMatch,
                              std::ref(countTable), i * nr_item_per_thread, R,
-                             std::ref(all_res), std::ref(mut), count_only);
+                             std::ref(all_res), std::ref(mut), count_only,
+                             std::ref(table_stream), detail_info);
     }
 
     int R = min(nr_item_per_thread, nr_item);
     match(trie, sequence, phredScore, misMatch,
-          countTable, 0, R, all_res, mut, count_only);
+          countTable, 0, R, all_res, mut, count_only,table_stream, detail_info);
 
     for(auto &t : threads)
     {
@@ -297,6 +309,9 @@ SEXP CRISPR_matching(String sampleFile,
     Rcpp::Rcout << e.what() << endl;
     return R_NilValue;
   }
+
+  if(detail_info)
+    trie.count(all_res, countTable, table_stream); 
 
   Rcpp::Rcout << "Compiling results\n";
 
@@ -458,7 +473,7 @@ SEXP CRISPR_matching_DNAString(Rcpp::StringVector readSeq,
                      double ext_left,
                      double gap_right,
                      double ext_right,
-                     double pen_max)
+                     double pen_max, bool detail_info)
 {
   // read in fastq file and store sequence and phred score as vector string.
   auto sequence     = vector<string>(),
@@ -501,6 +516,9 @@ SEXP CRISPR_matching_DNAString(Rcpp::StringVector readSeq,
   mutex mut;
   vector<res_t> all_res;
 
+  std::string table_out = outFile;
+  std::ofstream table_stream(table_out + ".txt");
+
   // run alignment
   try {
 
@@ -518,12 +536,13 @@ SEXP CRISPR_matching_DNAString(Rcpp::StringVector readSeq,
         threads.emplace_back(match,  std::ref(trie), std::ref(sequence),
                              std::ref(phredScore), misMatch,
                              std::ref(countTable), i * nr_item_per_thread, R,
-                             std::ref(all_res), std::ref(mut), count_only);
+                             std::ref(all_res), std::ref(mut), count_only,
+                             std::ref(table_stream), detail_info);
     }
 
     int R = min(nr_item_per_thread, nr_item);
     match(trie, sequence, phredScore, misMatch,
-          countTable, 0, R, all_res, mut, count_only);
+          countTable, 0, R, all_res, mut, count_only,table_stream, detail_info);
 
     for(auto &t : threads)
     {
@@ -535,6 +554,9 @@ SEXP CRISPR_matching_DNAString(Rcpp::StringVector readSeq,
     Rcpp::Rcout << e.what() << endl;
     return R_NilValue;
   }
+
+  if(detail_info)
+    trie.count(all_res, countTable, table_stream); 
 
   Rcpp::Rcout << "Compiling results\n";
 

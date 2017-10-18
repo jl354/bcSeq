@@ -104,7 +104,7 @@ library are kept.
 \begin{frame}[fragile]{\pkgname{}\_hamming}
 <<bcSeq, eval=FALSE>>=
 bcSeq_hamming(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
-    numThread = 4, count_only = TRUE)
+    numThread = 4, count_only = TRUE, detail_info = FALSE)
 @
 \pkgname{}\_hamming can be used for performing alignment using
 hamming distance.
@@ -143,6 +143,11 @@ The vectors of read/barcode IDs serve as the row and column names for the
 alignment probability matrix respectively. Examples of the probability matrix
 are provided in the example section. Note that the probability matrix is a
 sparse matrix.
+\item[\texttt{detail\_info}:]
+(bool) option for controlling function returns, default to
+be \texttt{FALSE}. If set to \texttt{TRUE}, a file contain read indexes 
+and library indexes reads aligned will be created with filename 
+\texttt{\$(outFile).txt}.
 \end{description}
 \end{frame}
 
@@ -177,7 +182,7 @@ vector of barcode IDs.
 bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = TRUE, userProb = NULL,
     gap_left = 2, ext_left = 1, gap_right = 2,
-    ext_right = 1, pen_max = 5)
+    ext_right = 1, pen_max = 5, detail_info = FALSE)
 @
 \pkgname{}\_edit can be used for performing alignment using edit distance.
 \vspace{3mm}
@@ -226,6 +231,11 @@ to control which alignments are considered. The default value is \texttt{NULL},
 indicating the alignment probabilities are to be computed following the model
 presented in the Alignment Probability Model section and a comprehensive
 example is given there.
+\item[\texttt{detail\_info}:]
+(bool) option for controlling function returns, default to
+be \texttt{FALSE}. If set to \texttt{TRUE}, a file contain read indexes 
+and library indexes reads aligned will be created with filename 
+\texttt{\$(outFile).txt}. Not avaliable for user-defined probablity model case.
 \end{description}
 \end{frame}
 

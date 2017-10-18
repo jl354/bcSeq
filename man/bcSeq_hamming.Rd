@@ -6,7 +6,7 @@
 type error distance}
 \usage{
 bcSeq_hamming(sampleFile, libFile, outFile, misMatch=2, tMat = NULL, 
-numThread = 4, count_only = TRUE)
+numThread = 4, count_only = TRUE, detail_info = FALSE)
 }
 \arguments{
 \item{sampleFile}{(string) sample filename, needs to be a fastq file}
@@ -31,6 +31,10 @@ matrix between all the reads and barcodes, a read IDs vector, and barcode IDs
 vector will be returned.  the row of the matrix is corresponding to the read
 IDs and the column of the matrix is associated with the barcode IDs. Examples
 of the probability matrix are provided in the vignettes files.}
+
+\item{detail_info}{(bool) option for controlling function returns, default to
+be \code{FALSE}. If set to \code{TRUE}, a file contain read indexes and library
+indexes reads aligned will be created with filename \code{\$(outFile).txt}.}
 }
 
 \note{

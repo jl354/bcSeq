@@ -8,7 +8,7 @@ type error distance.}
 bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat =
 NULL, numThread = 4, count_only = TRUE, gap_left = 3,
 ext_left = 1, gap_right = 3, ext_right = 1, pen_max =
-6, userProb = NULL)
+6, userProb = NULL, detail_info = FALSE)
 }
 \arguments{
 \item{sampleFile}{(string) sample filename, needs to be a fastq file.}
@@ -54,7 +54,13 @@ alignment forms (since there are multiple way to align a read to a barcode for
 same edit distance), \code{pen_val} is a vector for the value of penalty for
 all the possible alignment forms between a read and a barcode.  The purpose of
 \code{userProb(max_pen, prob, pen_val)} is to provide a way to determine the
-alignment pattern and probability.}}
+alignment pattern and probability.}
+
+\item{detail_info}{(bool) option for controlling function returns, default to
+be \code{FALSE}. If set to \code{TRUE}, a file contain read indexes and library
+indexes reads aligned will be created with filename \code{\$(outFile).txt}. Not
+avaliable for user-defined probablity model case.}
+}
 
 \note{ The user need to perform the removing of any adapter sequence before and
 after the barcode for the fastq file.  }

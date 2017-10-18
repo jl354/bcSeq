@@ -1,7 +1,7 @@
 Package: bcSeq
 Type: Package
 Title: Fast Sequence Alignment for High-throughput shRNA and CRISPR Screens
-Version: 0.99.5
+Version: 0.99.6
 Date: 2017-09-20
 Author@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
             email = "jiaxing.lin@duke.edu"), 
@@ -42,7 +42,9 @@ License: GPL (>= 2)
 biocViews: Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
 URL: https://bitbucket.org/impactp01/bcSeq
 Imports: Rcpp (>= 0.12.12), Matrix, Biostrings
+Depebds: R (>= 3.3)
 LinkingTo: Rcpp, Matrix
+BugReports: https://support.bioconductor.org
 Suggests: knitr
 VignetteBuilder: knitr
 BuildVignettes: yes

@@ -67,6 +67,35 @@ auto Trie::count(vector<res_t>& results,
     }
 }
 
+
+auto Trie::count(vector<res_t>& results,
+                 vector<double>& countTable,
+                 std::ostream& out) -> void
+{
+  // sort by read then probability
+  sort(results.begin(),
+      results.end(),
+      [](const res_t& x, const res_t& y) {
+          // return get<0>(x) < get<0>(y) || (get<0>(x) == get<0>(y) && get<2>(x) < get<2>(y));
+          return get<0>(x) < get<0>(y) ||
+                 (get<0>(x) == get<0>(y) &&
+                  get<2>(x)->value() < get<2>(y)->value());
+      });
+
+  // lock + count maximum per read
+  lock_guard<mutex> lock(mut);
+
+  auto last = results.begin();
+  for (auto x = results.begin(); x < results.end(); x++) {
+      if (x == results.end() - 1 || get<0>(*(x + 1)) != get<0>(*last)) {
+          countTable[get<1>(*x)] += 1;
+          out << get<0>(*x) << "," << get<1>(*x) << "\n";
+          last = x + 1;
+      }
+  }
+}
+
+
 // Method for set the transformation matrix used in the probability model.
 // This is advanced usage, notification for caution usage will be printed
 // to the console for users.

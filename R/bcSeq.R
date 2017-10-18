@@ -1,19 +1,19 @@
 .bcSeq_hamming <- function(sampleFile, libFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 4, count_only = TRUE) {
+    tMat = NULL, numThread = 4, count_only = TRUE, detail_info = FALSE) {
     # check file status
     if (!file.exists(sampleFile))
-    stop(paste0("Error! ", sampleFile, " does not exist!"))
+    stop(paste0(sampleFile, " does not exist!"))
     if (!file.exists(libFile))
-    stop(paste0("Error! ", libFile, " does not exist!"))
+    stop(paste0(libFile, " does not exist!"))
     if (file.exists(outFile))
-    stop(paste0("Error! ", outFile, " exists plese specify
+    stop(paste0(outFile, " exists plese specify
         another name."))
 
     tMatSeq <- c("default")
     tMatProb <- c(0.3333)
-    if (!is.null(tMat))
+    if (is.data.frame(tMat))
     {
-        for (i in 1:nrow(tMat))
+        for (i in seq_len(nrow(tMat)))
         {
             tMatSeq[i] <- tMat[i, 1]
             tMatProb[i] <- tMat[i, 2]
@@ -24,7 +24,7 @@
     tMatProb <- as.vector(tMatProb)
     res <- invisible(.Call("_bcSeq_CRISPR_matching", PACKAGE = "bcSeq",
         sampleFile, libFile, outFile, misMatch, tMatSeq, tMatProb,
-        numThread, TRUE, count_only, 0, 0, 0, 0, 0))
+        numThread, TRUE, count_only, 0, 0, 0, 0, 0, detail_info))
 
     if (!count_only)
     {
@@ -37,21 +37,21 @@
 .bcSeq_edit <- function(sampleFile, libFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE, gap_left = 3,
     ext_left = 1, gap_right = 3, ext_right = 1,
-    pen_max = 6, userProb = NULL) {
+    pen_max = 6, userProb = NULL, detail_info = FALSE) {
     # check file status
     if (!file.exists(sampleFile))
-    stop(paste0("Error! ", sampleFile, " does not exist!"))
+    stop(paste0(sampleFile, " does not exist!"))
     if (!file.exists(libFile))
-    stop(paste0("Error! ", libFile, " does not exist!"))
+    stop(paste0(libFile, " does not exist!"))
     if (file.exists(outFile))
-    stop(paste0("Error! ", outFile,
+    stop(paste0(outFile,
         " exists plese specify another name."))
 
     tMatSeq <- c("default")
     tMatProb <- c(0.3333)
-    if (!is.null(tMat))
+    if (is.data.frame(tMat))
     {
-        for (i in 1:nrow(tMat))
+        for (i in seq_len(nrow(tMat)))
         {
             tMatSeq[i] <- tMat[i, 1]
             tMatProb[i] <- tMat[i, 2]
@@ -62,7 +62,7 @@
     tMatProb <- as.vector(tMatProb)
 
     res = NULL
-    if( !is.null(userProb) )
+    if( is.character(userProb) )
     {
         res <- invisible(.Call("_bcSeq_CRISPR_user_matching", 
             PACKAGE = "bcSeq", sampleFile, libFile, outFile,
@@ -73,7 +73,7 @@
         res <- invisible(.Call("_bcSeq_CRISPR_matching", PACKAGE = "bcSeq",
             sampleFile, libFile, outFile, misMatch, tMatSeq,
             tMatProb, numThread, FALSE, count_only, gap_left, ext_left,
-            gap_right, ext_right, pen_max))
+            gap_right, ext_right, pen_max, detail_info))
     }
 
     if (!count_only)
@@ -84,7 +84,8 @@
 }
 
 .bcSeq_hamming_DNAString <- function(sampleFile, libFile, outFile, 
-    misMatch = 2, tMat = NULL, numThread = 4, count_only = TRUE) {
+    misMatch = 2, tMat = NULL, numThread = 4, 
+    count_only = TRUE, detail_info = FALSE) {
     readSeq <- as.vector(as.character(sampleFile))
     readSeq_ids <- as.vector(names(sampleFile))
     readPhred <- as.vector(as.character(unlist(sampleFile@metadata)))
@@ -93,7 +94,7 @@
 
     tMatSeq <- c("default")
     tMatProb <- c(0.3333)
-    if (!is.null(tMat))
+    if (is.data.frame(tMat))
     {
         for (i in 1:nrow(tMat))
         {
@@ -107,7 +108,7 @@
     res <- invisible(.Call("_bcSeq_CRISPR_matching_DNAString", 
         PACKAGE = "bcSeq",readSeq, readSeq_ids, readPhred,libSeq,libSeq_ids,
         outFile, misMatch, tMatSeq, tMatProb,
-        numThread, TRUE, count_only, 0, 0, 0, 0, 0))
+        numThread, TRUE, count_only, 0, 0, 0, 0, 0, detail_info))
 
     if (!count_only)
     {
@@ -120,7 +121,7 @@
 .bcSeq_edit_DNAString <- function(sampleFile, libFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE, gap_left = 3,
     ext_left = 1, gap_right = 3, ext_right = 1,
-    pen_max = 6, userProb = NULL) {
+    pen_max = 6, userProb = NULL, detail_info = FALSE) {
 
     readSeq <- as.vector(as.character(sampleFile))
     readSeq_ids <- as.vector(names(sampleFile))
@@ -130,7 +131,7 @@
 
     tMatSeq <- c("default")
     tMatProb <- c(0.3333)
-    if (!is.null(tMat))
+    if (is.data.frame(tMat))
     {
         for (i in 1:nrow(tMat))
         {
@@ -143,7 +144,7 @@
     tMatProb <- as.vector(tMatProb)
 
     res = NULL
-    if( !is.null(userProb) )
+    if( is.character(userProb) )
     {
         res <- invisible(.Call("_bcSeq_CRISPR_user_matching_DNAString", 
             PACKAGE = "bcSeq",
@@ -156,7 +157,7 @@
             PACKAGE = "bcSeq",readSeq, readSeq_ids, readPhred,libSeq,
             libSeq_ids, outFile, misMatch, tMatSeq,
             tMatProb, numThread, FALSE, count_only, gap_left, ext_left,
-            gap_right, ext_right, pen_max))
+            gap_right, ext_right, pen_max, detail_info))
     }
 
     if (!count_only)
@@ -168,25 +169,27 @@
 
 
 bcSeq_hamming <- function(sampleFile, libFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 4, count_only = TRUE)
+    tMat = NULL, numThread = 4, count_only = TRUE, detail_info = FALSE)
 {
     if(class(sampleFile) =="character")
     {
         .bcSeq_hamming(sampleFile=sampleFile, libFile=libFile,
             outFile =outFile, misMatch = misMatch,
-            tMat = tMat, numThread = numThread, count_only = count_only)
+            tMat = tMat, numThread = numThread, count_only = count_only,
+            detail_info = detail_info)
     } else if(class(sampleFile) == "DNAStringSet")
     {
         .bcSeq_hamming_DNAString(sampleFile=sampleFile, libFile=libFile,
             outFile =outFile, misMatch = misMatch,
-            tMat = tMat, numThread = numThread, count_only = count_only)
+            tMat = tMat, numThread = numThread, count_only = count_only,
+            detail_info = detail_info)
     }
 }
 
 bcSeq_edit <- function(sampleFile, libFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE, gap_left = 3,
     ext_left = 1, gap_right = 3, ext_right = 1,
-    pen_max = 6, userProb = NULL)
+    pen_max = 6, userProb = NULL, detail_info = FALSE)
 {
     if(class(sampleFile) == "character")
     {
@@ -200,6 +203,6 @@ bcSeq_edit <- function(sampleFile, libFile, outFile, misMatch = 2,
         .bcSeq_edit_DNAString(sampleFile, libFile, outFile, misMatch,
             tMat, numThread, count_only, gap_left,
             ext_left, gap_right, ext_right,
-            pen_max, userProb)
+            pen_max, userProb, detail_info)
     }
 }

@@ -137,6 +137,8 @@ public:
         -> bool;
 
     auto count(vector<res_t>& results, vector<double>& countTable) -> void;
+ 
+    auto count(vector<res_t>& results, vector<double>& countTable, std::ostream& out) -> void;
 
     template <typename... Args>
     auto hamming(Args&&... args) -> void
