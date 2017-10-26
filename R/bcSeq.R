@@ -86,6 +86,7 @@
 .bcSeq_hamming_DNAString <- function(sampleFile, libFile, outFile, 
     misMatch = 2, tMat = NULL, numThread = 4, 
     count_only = TRUE, detail_info = FALSE) {
+
     readSeq <- as.vector(as.character(sampleFile))
     readSeq_ids <- as.vector(names(sampleFile))
     readPhred <- as.vector(as.character(unlist(sampleFile@metadata)))
@@ -171,14 +172,13 @@
 bcSeq_hamming <- function(sampleFile, libFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE, detail_info = FALSE)
 {
-    if(class(sampleFile) =="character")
+    if(is.character(sampleFile))
     {
         .bcSeq_hamming(sampleFile=sampleFile, libFile=libFile,
             outFile =outFile, misMatch = misMatch,
             tMat = tMat, numThread = numThread, count_only = count_only,
             detail_info = detail_info)
-    } else if(class(sampleFile) == "DNAStringSet")
-    {
+    } else {
         .bcSeq_hamming_DNAString(sampleFile=sampleFile, libFile=libFile,
             outFile =outFile, misMatch = misMatch,
             tMat = tMat, numThread = numThread, count_only = count_only,
@@ -191,15 +191,13 @@ bcSeq_edit <- function(sampleFile, libFile, outFile, misMatch = 2,
     ext_left = 1, gap_right = 3, ext_right = 1,
     pen_max = 6, userProb = NULL, detail_info = FALSE)
 {
-    if(class(sampleFile) == "character")
+    if(is.character(sampleFile))
     {
         .bcSeq_edit(sampleFile, libFile, outFile, misMatch,
             tMat, numThread, count_only, gap_left,
             ext_left, gap_right, ext_right,
             pen_max, userProb)
-
-    } else if(class(sampleFile) == "DNAStringSet")
-    {
+    } else {
         .bcSeq_edit_DNAString(sampleFile, libFile, outFile, misMatch,
             tMat, numThread, count_only, gap_left,
             ext_left, gap_right, ext_right,
