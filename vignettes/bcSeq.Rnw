@@ -62,7 +62,7 @@ Screens}
     \author{Jiaxing Lin \and Jeremy Gresham \and Tongrong Wang \and So Young
 Kim \and James Alvarez \and Jeffrey S. Damrauer \and Scott Floyd \and Joshua
 Granek \and Andrew Allen \and Cliburn Chan \and Jichun Xie \and Kouros Owzar}
-    \date{2017-09-20}
+    \date{2017-11-30}
     \titlepage
 \end{frame}
 
@@ -449,7 +449,7 @@ corresponding to the observed Phred score $q_j$.
 % user defined probability model page 16
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{User defined Alignment Probability}
-\pkgname{} provides two approches for the user to defined their own
+\pkgname{} provides two approaches for the user to defined their own
 alignment probability
 \begin{itemize}
     \item User-defined Marginal Conditional Probability
@@ -472,12 +472,12 @@ Redefine marginal conditional probability:
         f(\epsilon_j)_{\r_{j-n},\ldots,\r_j} &\rt_j\ne\r_j,
     \end{cases}
 \end{align*}
-This definition assumes that suquences before position $j$ has influence on the
-error rate. The option can be actived by providing a dataframe to the argument
-\texttt{tMat}. The first column of this dataframe is a vector of sequences
-$[\r_{j-n},\ldots,\r_j]$ and the second column is the corresponding
-value of $f(\epsilon_j)_{[\r_{j-n},\ldots,\r_j]}$.  If a sequence is not
-in the dataframe the default values $\frac{\epsilon_j}{3}$ are used.
+This definition assumes that sequences before position $j$ has influence on the
+error rate. The option can be activated by providing a dataframe to the
+argument \texttt{tMat}. The first column of this dataframe is a vector of
+sequences $[\r_{j-n},\ldots,\r_j]$ and the second column is the corresponding
+value of $f(\epsilon_j)_{[\r_{j-n},\ldots,\r_j]}$.  If a sequence is not in the
+dataframe the default values $\frac{\epsilon_j}{3}$ are used.
 \end{frame}
 
 \subsection{User-defined $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$} \label{userP}
@@ -627,7 +627,7 @@ bcSeq_hamming(readFileName, libFileName, alignedFile, misMatch = 2,
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% section informaiton page 21
+% section information page 21
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Session Information}
 \begin{frame}[fragile]{Session Information}

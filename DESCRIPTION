@@ -1,9 +1,9 @@
 Package: bcSeq
 Type: Package
-Title: Fast Sequence Alignment for High-throughput shRNA and CRISPR Screens
-Version: 0.99.7
-Date: 2017-09-20
-Author@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
+Title: Fast Sequence Alignment for High-Throughput shRNA and CRISPR Screens
+Version: 1.0.1
+Date: 2017-11-30
+Authors@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
             email = "jiaxing.lin@duke.edu"), 
             person("Jeremy", "Gresham", role = "aut"),
             person("Jichun", "Xie", role = "aut"),
@@ -11,7 +11,7 @@ Author@R: c(person("Jiaxing","Lin", role = c("aut", "cre"),
             person("Tongrong", "Wang", role = "ctb"),
             person("So Young", "Kim", role = "ctb"),
             person("James", "Alvarez", role = "ctb"),
-            person("Jeffrey", "Damrauer", role = "ctb"),
+            person("Jeffrey S.", "Damrauer", role = "ctb"),
             person("Scott", "Floyd", role = "ctb"),
             person("Joshua", "Granek", role = "ctb"),
             person("Andrew", "Allen", role = "ctb"),
@@ -40,9 +40,9 @@ Description: This Rcpp-based package implements a highly efficient
     supports multi-threading.
 License: GPL (>= 2)
 biocViews: Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
-URL: https://bitbucket.org/impactp01/bcSeq
+URL: https://github.com/jl354/bcSeq
 Imports: Rcpp (>= 0.12.12), Matrix, Biostrings
-Depebds: R (>= 3.3)
+Depends: R (>= 3.4)
 LinkingTo: Rcpp, Matrix
 BugReports: https://support.bioconductor.org
 Suggests: knitr

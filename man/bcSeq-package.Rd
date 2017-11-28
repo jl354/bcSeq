@@ -8,7 +8,7 @@
 This \code{Rcpp}-based package implements highly efficient data structure and
 algorithms for performing the alignment of short 'CRISPR' or shRNA screens
 reads to library barcodes based on user specified mismatch, insert and delete
-tolerance. Matching qualities are then evaluted based on \code{Phred} score. A
+tolerance. Matching qualities are then evaluated based on \code{Phred} score. A
 Bayers' classifier is employed to determine the originating barcode of a read.
 We support user-defined probability model for evaluting matching qualities as
 well as flexible output.The alignment also support multiple-thread to reduce
@@ -18,8 +18,8 @@ the processing time in the \code{C++} implementation.
 \tabular{ll}{
 Package: \tab bcSeq\cr
 Type: \tab Package\cr
-Version: \tab 0.99.0\cr
-Date: \tab 2017-09-20\cr
+Version: \tab 1.0.1\cr
+Date: \tab 2017-11-30\cr
 License: \tab GPL-3\cr
 }
 Please see the example function calls below, or refer to the individual
@@ -29,7 +29,7 @@ package vignette serves as a tutorial for using this package.
 
 \author{
 Jiaxing Lin, Jeremy Gresham, Tongrong Wang, So Young Kim, James Alvarez,
-Jeffrey Damrauer, Scott Floyd, Joshua Granek, Andrew Allen, Cliburn Chan,
+Jeffrey S. Damrauer, Scott Floyd, Joshua Granek, Andrew Allen, Cliburn Chan,
 Jichun Xie, Kouros Owzar
 
 Maintainer: Jiaxing Lin <jiaxing.lin@duke.edu>
