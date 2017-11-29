@@ -115,6 +115,19 @@ res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
 
 #### perform alignment with customized probability function
 useP <-function(m, x ,y) { x * (1 - log(2) + log(1 + m / (m + y) ) ) }
+#### user can write the user defined probability function in c++ and 
+#### port to R using Rcpp packages as follow
+library(Rcpp)
+cppFunction(
+'NumericVector usePc(int m, NumericVector val, NumericVector pens) {
+    int n = val.size();
+    NumericVector out(n);
+    for(int i = 0; i < n; ++i) {
+        out[i] = val[i] * (1 - log(2) +
+        log(1 + m / (m + pens[i]) ) );
+    }
+    return out;
+}')
 outFile  <- "./count_edit_2.csv"
 res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE, userProb = useP,
