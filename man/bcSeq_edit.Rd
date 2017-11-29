@@ -116,7 +116,7 @@ res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
 #### perform alignment with customized probability function
 useP <-function(m, x ,y) { x * (1 - log(2) + log(1 + m / (m + y) ) ) }
 #### user can write the user defined probability function in c++ and 
-#### port to R using Rcpp packages as follow
+#### port to R using Rcpp packages as follow.
 library(Rcpp)
 cppFunction(
 'NumericVector usePc(int m, NumericVector val, NumericVector pens) {
