@@ -113,10 +113,33 @@ res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
     gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
     pen_max = 7)
 
-#### perform alignment with customized probability function
-useP <-function(m, x ,y) { x * (1 - log(2) + log(1 + m / (m + y) ) ) }
-#### user can write the user defined probability function in c++ and 
-#### port to R using Rcpp packages as follow.
+#### The user defined probability model function is a modeling 
+#### of the alignment probability and the penalty encounted 
+#### due to the edit distance between a read and a candidata 
+#### barcode. The user define probability model function serves 
+#### as a combined evaluation of the alignment quality by 
+#### considering both the alignment probability and the edit 
+#### distance penalty.
+
+#### the user defined function has three arguements
+#### (1) val: a double vector indicates the alignment probabilities 
+####          between a read and its candidate barcodes based on 
+####          edit distance.
+#### (2) pens: a double vector indicates the penalties of edit distance
+####          between a read and its candidate barcodes for the alignment
+####          based on edit distance.
+#### (3) m: a double scalor indicating the weight for alignment 
+####        probabilities and edit distance penalty to determine 
+####        the final alignment quality that can be used as 
+####        as clasifier. 
+
+#### User can also constuct a more complexed model by only keeping the 
+#### function signature.
+
+#### Example function in R
+useP <-function(m, val, pens) { val * (1 - log(2) + log(1 + m / (m + pens) ) ) }
+
+#### Example function in C++(can be ported to R using Rcpp packages)
 library(Rcpp)
 cppFunction(
 'NumericVector usePc(int m, NumericVector val, NumericVector pens) {
