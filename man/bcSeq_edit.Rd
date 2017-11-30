@@ -142,7 +142,7 @@ useP <-function(m, val, pens) { val * (1 - log(2) + log(1 + m / (m + pens) ) ) }
 #### Example function in C++(can be ported to R using Rcpp packages)
 library(Rcpp)
 cppFunction(
-'NumericVector usePc(int m, NumericVector val, NumericVector pens) {
+'NumericVector cpp_fun(int m, NumericVector val, NumericVector pens) {
     int n = val.size();
     NumericVector out(n);
     for(int i = 0; i < n; ++i) {
