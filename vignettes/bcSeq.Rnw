@@ -497,7 +497,7 @@ reads and barcodes in the same order. \texttt{userProb} is a way for the user
 to control which alignments are considered.
 \scriptsize
 <<comtomizeP,eval=FALSE>>=
-comstomizeP <- function(max_pen, prob, pen_val)
+customizeP <- function(max_pen, prob, pen_val)
 {
     prob * (1 - log(2) + log(1 + max_pen / (max_pen + pen_val) ) )
 }
@@ -511,6 +511,38 @@ Note: the using of user-defined $\Pr{\Rt_j=\rt_j|\R_j=\r_j}$ can add extra
 computation time. As defined here, \texttt{customizeP} is equivalent to
 the default model.
 \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% user defined probability model page 18
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\small
+The customized \texttt{userProb} function can also be defined using sounceCpp
+in a non-vectorized fashion.  The function signature is
+Rcpp::NumericVector(double, Rcpp::NumericVector, Rcpp::NumericVector).
+<<comtomizeP2,eval=FALSE>>=
+library(Rcpp)
+sourceCpp(code='
+#include<Rcpp.h>
+using namespace Rcpp;
+// [[Rcpp::export]]
+NumericVector cpp_fun(double m, NumericVector prob, NumericVector pen){
+    NumericVector ret;
+    for(int i = 0; i < prob.size(); ++i){
+        ret.push_back(prob[i] * (1 - log(2) + log(1 + pen[i]/(m + pen[i]))));
+    }
+    return ret;
+}')
+
+bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
+    numThread = 4, count_only = TRUE, userProb = cpp_fun,
+    gap_left = 2, ext_left = 1, gap_right = 2,
+    ext_right = 1, pen_max = 5)
+@
+\end{frame}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % run MAGeCK data page 20
