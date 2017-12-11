@@ -6,106 +6,171 @@
 using namespace Rcpp;
 
 // CRISPR_matching
-SEXP CRISPR_matching(String sampleFile, String libFile, String outFile, int misMatch, Rcpp::StringVector tMatSeq, Rcpp::NumericVector tMatProb, int numThread, bool hamming, bool count_only, double gap_left, double ext_left, double gap_right, double ext_right, double pen_max, bool detail_info);
-RcppExport SEXP _bcSeq_CRISPR_matching(SEXP sampleFileSEXP, SEXP libFileSEXP, SEXP outFileSEXP, SEXP misMatchSEXP, SEXP tMatSeqSEXP, SEXP tMatProbSEXP, SEXP numThreadSEXP, SEXP hammingSEXP, SEXP count_onlySEXP, SEXP gap_leftSEXP, SEXP ext_leftSEXP, SEXP gap_rightSEXP, SEXP ext_rightSEXP, SEXP pen_maxSEXP, SEXP detail_infoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< String >::type sampleFile(sampleFileSEXP);
-    Rcpp::traits::input_parameter< String >::type libFile(libFileSEXP);
-    Rcpp::traits::input_parameter< String >::type outFile(outFileSEXP);
-    Rcpp::traits::input_parameter< int >::type misMatch(misMatchSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type tMatSeq(tMatSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type tMatProb(tMatProbSEXP);
-    Rcpp::traits::input_parameter< int >::type numThread(numThreadSEXP);
-    Rcpp::traits::input_parameter< bool >::type hamming(hammingSEXP);
-    Rcpp::traits::input_parameter< bool >::type count_only(count_onlySEXP);
-    Rcpp::traits::input_parameter< double >::type gap_left(gap_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_left(ext_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type gap_right(gap_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_right(ext_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type pen_max(pen_maxSEXP);
-    Rcpp::traits::input_parameter< bool >::type detail_info(detail_infoSEXP);
-    rcpp_result_gen = Rcpp::wrap(CRISPR_matching(sampleFile, libFile, outFile, misMatch, tMatSeq, tMatProb, numThread, hamming, count_only, gap_left, ext_left, gap_right, ext_right, pen_max, detail_info));
-    return rcpp_result_gen;
-END_RCPP
+SEXP CRISPR_matching(String sampleFile, String libFile, String outFile,
+                     int misMatch, Rcpp::StringVector tMatSeq,
+                     Rcpp::NumericVector tMatProb, int numThread, bool hamming,
+                     bool count_only, double gap_left, double ext_left,
+                     double gap_right, double ext_right, double pen_max,
+                     bool detail_info);
+RcppExport SEXP _bcSeq_CRISPR_matching(SEXP sampleFileSEXP, SEXP libFileSEXP,
+                                       SEXP outFileSEXP, SEXP misMatchSEXP,
+                                       SEXP tMatSeqSEXP, SEXP tMatProbSEXP,
+                                       SEXP numThreadSEXP, SEXP hammingSEXP,
+                                       SEXP count_onlySEXP, SEXP gap_leftSEXP,
+                                       SEXP ext_leftSEXP, SEXP gap_rightSEXP,
+                                       SEXP ext_rightSEXP, SEXP pen_maxSEXP,
+                                       SEXP detail_infoSEXP) {
+  BEGIN_RCPP
+  Rcpp::RObject rcpp_result_gen;
+  Rcpp::RNGScope rcpp_rngScope_gen;
+  Rcpp::traits::input_parameter<String>::type sampleFile(sampleFileSEXP);
+  Rcpp::traits::input_parameter<String>::type libFile(libFileSEXP);
+  Rcpp::traits::input_parameter<String>::type outFile(outFileSEXP);
+  Rcpp::traits::input_parameter<int>::type misMatch(misMatchSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type tMatSeq(tMatSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::NumericVector>::type tMatProb(
+      tMatProbSEXP);
+  Rcpp::traits::input_parameter<int>::type numThread(numThreadSEXP);
+  Rcpp::traits::input_parameter<bool>::type hamming(hammingSEXP);
+  Rcpp::traits::input_parameter<bool>::type count_only(count_onlySEXP);
+  Rcpp::traits::input_parameter<double>::type gap_left(gap_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_left(ext_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type gap_right(gap_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_right(ext_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type pen_max(pen_maxSEXP);
+  Rcpp::traits::input_parameter<bool>::type detail_info(detail_infoSEXP);
+  rcpp_result_gen = Rcpp::wrap(
+      CRISPR_matching(sampleFile, libFile, outFile, misMatch, tMatSeq, tMatProb,
+                      numThread, hamming, count_only, gap_left, ext_left,
+                      gap_right, ext_right, pen_max, detail_info));
+  return rcpp_result_gen;
+  END_RCPP
 }
 // CRISPR_user_matching
-SEXP CRISPR_user_matching(String sampleFile, String libFile, String outFile, int misMatch, Rcpp::StringVector tMatSeq, Rcpp::NumericVector tMatProb, int numThread, bool count_only, double gap_left, double ext_left, double gap_right, double ext_right, double pen_max, Function tForm);
-RcppExport SEXP _bcSeq_CRISPR_user_matching(SEXP sampleFileSEXP, SEXP libFileSEXP, SEXP outFileSEXP, SEXP misMatchSEXP, SEXP tMatSeqSEXP, SEXP tMatProbSEXP, SEXP numThreadSEXP, SEXP count_onlySEXP, SEXP gap_leftSEXP, SEXP ext_leftSEXP, SEXP gap_rightSEXP, SEXP ext_rightSEXP, SEXP pen_maxSEXP, SEXP tFormSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< String >::type sampleFile(sampleFileSEXP);
-    Rcpp::traits::input_parameter< String >::type libFile(libFileSEXP);
-    Rcpp::traits::input_parameter< String >::type outFile(outFileSEXP);
-    Rcpp::traits::input_parameter< int >::type misMatch(misMatchSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type tMatSeq(tMatSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type tMatProb(tMatProbSEXP);
-    Rcpp::traits::input_parameter< int >::type numThread(numThreadSEXP);
-    Rcpp::traits::input_parameter< bool >::type count_only(count_onlySEXP);
-    Rcpp::traits::input_parameter< double >::type gap_left(gap_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_left(ext_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type gap_right(gap_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_right(ext_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type pen_max(pen_maxSEXP);
-    Rcpp::traits::input_parameter< Function >::type tForm(tFormSEXP);
-    rcpp_result_gen = Rcpp::wrap(CRISPR_user_matching(sampleFile, libFile, outFile, misMatch, tMatSeq, tMatProb, numThread, count_only, gap_left, ext_left, gap_right, ext_right, pen_max, tForm));
-    return rcpp_result_gen;
-END_RCPP
+SEXP CRISPR_user_matching(String sampleFile, String libFile, String outFile,
+                          int misMatch, Rcpp::StringVector tMatSeq,
+                          Rcpp::NumericVector tMatProb, int numThread,
+                          bool count_only, double gap_left, double ext_left,
+                          double gap_right, double ext_right, double pen_max,
+                          Function tForm);
+RcppExport SEXP _bcSeq_CRISPR_user_matching(
+    SEXP sampleFileSEXP, SEXP libFileSEXP, SEXP outFileSEXP, SEXP misMatchSEXP,
+    SEXP tMatSeqSEXP, SEXP tMatProbSEXP, SEXP numThreadSEXP,
+    SEXP count_onlySEXP, SEXP gap_leftSEXP, SEXP ext_leftSEXP,
+    SEXP gap_rightSEXP, SEXP ext_rightSEXP, SEXP pen_maxSEXP, SEXP tFormSEXP) {
+  BEGIN_RCPP
+  Rcpp::RObject rcpp_result_gen;
+  Rcpp::RNGScope rcpp_rngScope_gen;
+  Rcpp::traits::input_parameter<String>::type sampleFile(sampleFileSEXP);
+  Rcpp::traits::input_parameter<String>::type libFile(libFileSEXP);
+  Rcpp::traits::input_parameter<String>::type outFile(outFileSEXP);
+  Rcpp::traits::input_parameter<int>::type misMatch(misMatchSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type tMatSeq(tMatSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::NumericVector>::type tMatProb(
+      tMatProbSEXP);
+  Rcpp::traits::input_parameter<int>::type numThread(numThreadSEXP);
+  Rcpp::traits::input_parameter<bool>::type count_only(count_onlySEXP);
+  Rcpp::traits::input_parameter<double>::type gap_left(gap_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_left(ext_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type gap_right(gap_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_right(ext_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type pen_max(pen_maxSEXP);
+  Rcpp::traits::input_parameter<Function>::type tForm(tFormSEXP);
+  rcpp_result_gen = Rcpp::wrap(CRISPR_user_matching(
+      sampleFile, libFile, outFile, misMatch, tMatSeq, tMatProb, numThread,
+      count_only, gap_left, ext_left, gap_right, ext_right, pen_max, tForm));
+  return rcpp_result_gen;
+  END_RCPP
 }
 // CRISPR_matching_DNAString
-SEXP CRISPR_matching_DNAString(Rcpp::StringVector readSeq, Rcpp::StringVector readSeq_ids, Rcpp::StringVector readPhred, Rcpp::StringVector libSeq, Rcpp::StringVector libSeq_ids, String outFile, int misMatch, Rcpp::StringVector tMatSeq, Rcpp::NumericVector tMatProb, int numThread, bool hamming, bool count_only, double gap_left, double ext_left, double gap_right, double ext_right, double pen_max, bool detail_info);
-RcppExport SEXP _bcSeq_CRISPR_matching_DNAString(SEXP readSeqSEXP, SEXP readSeq_idsSEXP, SEXP readPhredSEXP, SEXP libSeqSEXP, SEXP libSeq_idsSEXP, SEXP outFileSEXP, SEXP misMatchSEXP, SEXP tMatSeqSEXP, SEXP tMatProbSEXP, SEXP numThreadSEXP, SEXP hammingSEXP, SEXP count_onlySEXP, SEXP gap_leftSEXP, SEXP ext_leftSEXP, SEXP gap_rightSEXP, SEXP ext_rightSEXP, SEXP pen_maxSEXP, SEXP detail_infoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type readSeq(readSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type readSeq_ids(readSeq_idsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type readPhred(readPhredSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type libSeq(libSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type libSeq_ids(libSeq_idsSEXP);
-    Rcpp::traits::input_parameter< String >::type outFile(outFileSEXP);
-    Rcpp::traits::input_parameter< int >::type misMatch(misMatchSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type tMatSeq(tMatSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type tMatProb(tMatProbSEXP);
-    Rcpp::traits::input_parameter< int >::type numThread(numThreadSEXP);
-    Rcpp::traits::input_parameter< bool >::type hamming(hammingSEXP);
-    Rcpp::traits::input_parameter< bool >::type count_only(count_onlySEXP);
-    Rcpp::traits::input_parameter< double >::type gap_left(gap_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_left(ext_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type gap_right(gap_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_right(ext_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type pen_max(pen_maxSEXP);
-    Rcpp::traits::input_parameter< bool >::type detail_info(detail_infoSEXP);
-    rcpp_result_gen = Rcpp::wrap(CRISPR_matching_DNAString(readSeq, readSeq_ids, readPhred, libSeq, libSeq_ids, outFile, misMatch, tMatSeq, tMatProb, numThread, hamming, count_only, gap_left, ext_left, gap_right, ext_right, pen_max, detail_info));
-    return rcpp_result_gen;
-END_RCPP
+SEXP CRISPR_matching_DNAString(
+    Rcpp::StringVector readSeq, Rcpp::StringVector readSeq_ids,
+    Rcpp::StringVector readPhred, Rcpp::StringVector libSeq,
+    Rcpp::StringVector libSeq_ids, String outFile, int misMatch,
+    Rcpp::StringVector tMatSeq, Rcpp::NumericVector tMatProb, int numThread,
+    bool hamming, bool count_only, double gap_left, double ext_left,
+    double gap_right, double ext_right, double pen_max, bool detail_info);
+RcppExport SEXP _bcSeq_CRISPR_matching_DNAString(
+    SEXP readSeqSEXP, SEXP readSeq_idsSEXP, SEXP readPhredSEXP, SEXP libSeqSEXP,
+    SEXP libSeq_idsSEXP, SEXP outFileSEXP, SEXP misMatchSEXP, SEXP tMatSeqSEXP,
+    SEXP tMatProbSEXP, SEXP numThreadSEXP, SEXP hammingSEXP,
+    SEXP count_onlySEXP, SEXP gap_leftSEXP, SEXP ext_leftSEXP,
+    SEXP gap_rightSEXP, SEXP ext_rightSEXP, SEXP pen_maxSEXP,
+    SEXP detail_infoSEXP) {
+  BEGIN_RCPP
+  Rcpp::RObject rcpp_result_gen;
+  Rcpp::RNGScope rcpp_rngScope_gen;
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type readSeq(readSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type readSeq_ids(
+      readSeq_idsSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type readPhred(
+      readPhredSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type libSeq(libSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type libSeq_ids(
+      libSeq_idsSEXP);
+  Rcpp::traits::input_parameter<String>::type outFile(outFileSEXP);
+  Rcpp::traits::input_parameter<int>::type misMatch(misMatchSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type tMatSeq(tMatSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::NumericVector>::type tMatProb(
+      tMatProbSEXP);
+  Rcpp::traits::input_parameter<int>::type numThread(numThreadSEXP);
+  Rcpp::traits::input_parameter<bool>::type hamming(hammingSEXP);
+  Rcpp::traits::input_parameter<bool>::type count_only(count_onlySEXP);
+  Rcpp::traits::input_parameter<double>::type gap_left(gap_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_left(ext_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type gap_right(gap_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_right(ext_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type pen_max(pen_maxSEXP);
+  Rcpp::traits::input_parameter<bool>::type detail_info(detail_infoSEXP);
+  rcpp_result_gen = Rcpp::wrap(CRISPR_matching_DNAString(
+      readSeq, readSeq_ids, readPhred, libSeq, libSeq_ids, outFile, misMatch,
+      tMatSeq, tMatProb, numThread, hamming, count_only, gap_left, ext_left,
+      gap_right, ext_right, pen_max, detail_info));
+  return rcpp_result_gen;
+  END_RCPP
 }
 // CRISPR_user_matching_DNAString
-SEXP CRISPR_user_matching_DNAString(Rcpp::StringVector readSeq, Rcpp::StringVector readSeq_ids, Rcpp::StringVector readPhred, Rcpp::StringVector libSeq, Rcpp::StringVector libSeq_ids, String outFile, int misMatch, Rcpp::StringVector tMatSeq, Rcpp::NumericVector tMatProb, int numThread, bool count_only, double gap_left, double ext_left, double gap_right, double ext_right, double pen_max, Function tForm);
-RcppExport SEXP _bcSeq_CRISPR_user_matching_DNAString(SEXP readSeqSEXP, SEXP readSeq_idsSEXP, SEXP readPhredSEXP, SEXP libSeqSEXP, SEXP libSeq_idsSEXP, SEXP outFileSEXP, SEXP misMatchSEXP, SEXP tMatSeqSEXP, SEXP tMatProbSEXP, SEXP numThreadSEXP, SEXP count_onlySEXP, SEXP gap_leftSEXP, SEXP ext_leftSEXP, SEXP gap_rightSEXP, SEXP ext_rightSEXP, SEXP pen_maxSEXP, SEXP tFormSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type readSeq(readSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type readSeq_ids(readSeq_idsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type readPhred(readPhredSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type libSeq(libSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type libSeq_ids(libSeq_idsSEXP);
-    Rcpp::traits::input_parameter< String >::type outFile(outFileSEXP);
-    Rcpp::traits::input_parameter< int >::type misMatch(misMatchSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type tMatSeq(tMatSeqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type tMatProb(tMatProbSEXP);
-    Rcpp::traits::input_parameter< int >::type numThread(numThreadSEXP);
-    Rcpp::traits::input_parameter< bool >::type count_only(count_onlySEXP);
-    Rcpp::traits::input_parameter< double >::type gap_left(gap_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_left(ext_leftSEXP);
-    Rcpp::traits::input_parameter< double >::type gap_right(gap_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type ext_right(ext_rightSEXP);
-    Rcpp::traits::input_parameter< double >::type pen_max(pen_maxSEXP);
-    Rcpp::traits::input_parameter< Function >::type tForm(tFormSEXP);
-    rcpp_result_gen = Rcpp::wrap(CRISPR_user_matching_DNAString(readSeq, readSeq_ids, readPhred, libSeq, libSeq_ids, outFile, misMatch, tMatSeq, tMatProb, numThread, count_only, gap_left, ext_left, gap_right, ext_right, pen_max, tForm));
-    return rcpp_result_gen;
-END_RCPP
+SEXP CRISPR_user_matching_DNAString(
+    Rcpp::StringVector readSeq, Rcpp::StringVector readSeq_ids,
+    Rcpp::StringVector readPhred, Rcpp::StringVector libSeq,
+    Rcpp::StringVector libSeq_ids, String outFile, int misMatch,
+    Rcpp::StringVector tMatSeq, Rcpp::NumericVector tMatProb, int numThread,
+    bool count_only, double gap_left, double ext_left, double gap_right,
+    double ext_right, double pen_max, Function tForm);
+RcppExport SEXP _bcSeq_CRISPR_user_matching_DNAString(
+    SEXP readSeqSEXP, SEXP readSeq_idsSEXP, SEXP readPhredSEXP, SEXP libSeqSEXP,
+    SEXP libSeq_idsSEXP, SEXP outFileSEXP, SEXP misMatchSEXP, SEXP tMatSeqSEXP,
+    SEXP tMatProbSEXP, SEXP numThreadSEXP, SEXP count_onlySEXP,
+    SEXP gap_leftSEXP, SEXP ext_leftSEXP, SEXP gap_rightSEXP,
+    SEXP ext_rightSEXP, SEXP pen_maxSEXP, SEXP tFormSEXP) {
+  BEGIN_RCPP
+  Rcpp::RObject rcpp_result_gen;
+  Rcpp::RNGScope rcpp_rngScope_gen;
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type readSeq(readSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type readSeq_ids(
+      readSeq_idsSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type readPhred(
+      readPhredSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type libSeq(libSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type libSeq_ids(
+      libSeq_idsSEXP);
+  Rcpp::traits::input_parameter<String>::type outFile(outFileSEXP);
+  Rcpp::traits::input_parameter<int>::type misMatch(misMatchSEXP);
+  Rcpp::traits::input_parameter<Rcpp::StringVector>::type tMatSeq(tMatSeqSEXP);
+  Rcpp::traits::input_parameter<Rcpp::NumericVector>::type tMatProb(
+      tMatProbSEXP);
+  Rcpp::traits::input_parameter<int>::type numThread(numThreadSEXP);
+  Rcpp::traits::input_parameter<bool>::type count_only(count_onlySEXP);
+  Rcpp::traits::input_parameter<double>::type gap_left(gap_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_left(ext_leftSEXP);
+  Rcpp::traits::input_parameter<double>::type gap_right(gap_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type ext_right(ext_rightSEXP);
+  Rcpp::traits::input_parameter<double>::type pen_max(pen_maxSEXP);
+  Rcpp::traits::input_parameter<Function>::type tForm(tFormSEXP);
+  rcpp_result_gen = Rcpp::wrap(CRISPR_user_matching_DNAString(
+      readSeq, readSeq_ids, readPhred, libSeq, libSeq_ids, outFile, misMatch,
+      tMatSeq, tMatProb, numThread, count_only, gap_left, ext_left, gap_right,
+      ext_right, pen_max, tForm));
+  return rcpp_result_gen;
+  END_RCPP
 }
