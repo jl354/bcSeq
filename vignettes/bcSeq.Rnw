@@ -404,7 +404,7 @@ alignment probability between the reads and the barcodes by setting argument
 <<echo=FALSE>>=
 system("rm *csv")
 @
-<<custAlign2>>=
+<<custAlign2,eval=FALSE>>=
 outFile  <- "./count2.csv"
 bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = FALSE, gap_left = 2, ext_left = 1,
