@@ -58,7 +58,7 @@ and a barcode for the error toleration.  }
 #### Generate barcodes
 lFName    <- "./libFile.fasta"
 bases     <- c(rep('A', 4), rep('C',4), rep('G',4), rep('T',4))
-numOfBars <- 20
+numOfBars <- 40
 Barcodes  <- rep(NA, numOfBars*2)
 for (i in 1:numOfBars){
     Barcodes[2*i-1] <- paste0(">barcode_ID: ", i)
@@ -84,5 +84,5 @@ write(Reads, rFName)
 #### perform alignment
 outFile  <- "./count_hamming.csv"
 res <- bcSeq_hamming(rFName, lFName, outFile, misMatch = 2,
-    tMat = NULL, numThread = 4, count_only = TRUE)
+    tMat = NULL, numThread = 1, count_only = TRUE)
 }

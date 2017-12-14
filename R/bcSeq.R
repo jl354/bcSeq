@@ -25,7 +25,10 @@
         numThread, TRUE, count_only, 0, 0, 0, 0, 0, detail_info))
     
     if (!count_only) {
-        out <- do.call(Matrix::sparseMatrix, res[[2]])
+        out <- Matrix::sparseMatrix(i=(res[[2]]$i+1), j =(res[[2]]$j+1), 
+            x=res[[2]]$x, dims = c(as.integer(max(res[[2]]$i)+1),
+            as.integer(max(res[[2]]$j)+1)))
+        #out <- do.call(Matrix::sparseMatrix, res[[2]])
         c(res[1], alignProb = out)
     }
     
@@ -70,7 +73,10 @@
     }
     
     if (!count_only) {
-        out <- do.call(Matrix::sparseMatrix, res[[2]])
+        out <- Matrix::sparseMatrix(i=(res[[2]]$i+1), j =(res[[2]]$j+1), 
+            x=res[[2]]$x, dims = c(as.integer(max(res[[2]]$i)+1),
+            as.integer(max(res[[2]]$j)+1)))
+        #out <- do.call(Matrix::sparseMatrix, res[[2]])
         c(res[1], out)
     }
 }
@@ -102,7 +108,10 @@
         numThread, TRUE, count_only, 0, 0, 0, 0, 0, detail_info))
     
     if (!count_only) {
-        out <- do.call(Matrix::sparseMatrix, res[[2]])
+        out <- Matrix::sparseMatrix(i=(res[[2]]$i+1), j =(res[[2]]$j+1), 
+            x=res[[2]]$x, dims = c(as.integer(max(res[[2]]$i)+1),
+            as.integer(max(res[[2]]$j)+1)))
+        #out <- do.call(Matrix::sparseMatrix, res[[2]])
         c(res[1], alignProb = out)
     }
     
@@ -147,7 +156,10 @@
     }
     
     if (!count_only) {
-        out <- do.call(Matrix::sparseMatrix, res[[2]])
+        out <- Matrix::sparseMatrix(i=(res[[2]]$i+1), j =(res[[2]]$j+1), 
+            x=res[[2]]$x, dims = c(as.integer(max(res[[2]]$i)+1),
+            as.integer(max(res[[2]]$j)+1)))
+        #out <- do.call(Matrix::sparseMatrix, res[[2]])
         c(res[1], out)
     }
 }

@@ -140,17 +140,17 @@ res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
 useP <-function(m, val, pens) { val * (1 - log(2) + log(1 + m / (m + pens) ) ) }
 
 #### Example function in C++(can be ported to R using Rcpp packages)
-library(Rcpp)
-cppFunction(
-'NumericVector cpp_fun(int m, NumericVector val, NumericVector pens) {
-    int n = val.size();
-    NumericVector out(n);
-    for(int i = 0; i < n; ++i) {
-        out[i] = val[i] * (1 - log(2) +
-        log(1 + m / (m + pens[i]) ) );
-    }
-    return out;
-}')
+#library(Rcpp)
+#cppFunction(
+#'NumericVector cpp_fun(int m, NumericVector val, NumericVector pens) {
+#    int n = val.size();
+#    NumericVector out(n);
+#    for(int i = 0; i < n; ++i) {
+#        out[i] = val[i] * (1 - log(2) +
+#        log(1 + m / (m + pens[i]) ) );
+#    }
+#    return out;
+#}')
 outFile  <- "./count_edit_2.csv"
 res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE, userProb = useP,
