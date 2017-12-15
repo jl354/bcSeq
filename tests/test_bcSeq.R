@@ -41,10 +41,10 @@ res <- read.csv(outFile, header=FALSE)
 res
 
 #### with return of alignment probability matrix to R
-outFile  <- "./countH2.csv"
-res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 2, count_only = FALSE )
-res 
+#outFile  <- "./countH2.csv"
+#res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 2, count_only = FALSE )
+#res 
 
 #### with default output for bcSeq_edit
 outFile  <- "./countE.csv"
@@ -56,12 +56,12 @@ res <- read.csv(outFile, header=FALSE)
 res
 
 #### with return of alignment probability matrix to R
-outFile  <- "./countE2.csv"
-res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 2, count_only = FALSE,
-    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
-    pen_max = 7)
-res
+#outFile  <- "./countE2.csv"
+#res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 2, count_only = FALSE,
+#    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+#    pen_max = 7)
+#res
 
 #### user-defined probability model
 comstomizeP <- function(m, x, y)
