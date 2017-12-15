@@ -1,0 +1,2 @@
+version 1.0.1
+fixed a bug for windows version that caused by pthread.
