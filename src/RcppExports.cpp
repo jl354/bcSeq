@@ -109,16 +109,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// trim
-void trim(String inputFile, String outputFile, int start, int end);
-RcppExport SEXP _bcSeq_trim(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP startSEXP, SEXP endSEXP) {
+// trimRead
+void trimRead(String inputFile, String outputFile, int start, int end);
+RcppExport SEXP _bcSeq_trimRead(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< String >::type inputFile(inputFileSEXP);
     Rcpp::traits::input_parameter< String >::type outputFile(outputFileSEXP);
     Rcpp::traits::input_parameter< int >::type start(startSEXP);
     Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    trim(inputFile, outputFile, start, end);
+    trimRead(inputFile, outputFile, start, end);
     return R_NilValue;
 END_RCPP
 }

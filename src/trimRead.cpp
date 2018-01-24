@@ -6,7 +6,7 @@ using namespace Rcpp;
 using namespace std;
 
 // [[Rcpp::export]]
-void trim(String inputFile, String outputFile, int start, int end)
+void trimRead(String inputFile, String outputFile, int start, int end)
 {
     string inFile = inputFile;
     string outFile = outputFile;

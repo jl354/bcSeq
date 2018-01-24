@@ -25,12 +25,12 @@ extern SEXP _bcSeq_CRISPR_user_matching_DNAString(SEXP, SEXP, SEXP, SEXP, SEXP,
                                                   SEXP, SEXP, SEXP, SEXP, SEXP,
                                                   SEXP, SEXP, SEXP, SEXP, SEXP,
                                                   SEXP, SEXP);
-extern SEXP _bcSeq_trim(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _bcSeq_trimRead(SEXP, SEXP, SEXP, SEXP);
 
 extern SEXP _bcSeq_uniqueBar(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_bcSeq_trim", (DL_FUNC)&_bcSeq_trim, 4},
+    {"_bcSeq_trimRead", (DL_FUNC)&_bcSeq_trimRead, 4},
     {"_bcSeq_uniqueBar", (DL_FUNC)&_bcSeq_uniqueBar, 2},
     {"_bcSeq_CRISPR_matching", (DL_FUNC)&_bcSeq_CRISPR_matching, 15},
     {"_bcSeq_CRISPR_matching_DNAString",
