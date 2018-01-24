@@ -1,5 +1,7 @@
 export(bcSeq_hamming)
 export(bcSeq_edit)
+export(trimRead)
+export(uniqueBar)
 useDynLib(bcSeq)
 importFrom(Rcpp, evalCpp)
 import(Matrix)
