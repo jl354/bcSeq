@@ -1,8 +1,8 @@
-\name{trim}
-\alias{trim}
+\name{trimRead}
+\alias{trimRead}
 \title{Tool function to trim adaptor for read sequences.}
 \usage{
-trim(inputFile,outputFile, start, end)
+trimRead(inputFile,outputFile, start, end)
 }
 \arguments{
 \item{inputFile}{(string) filename for the library sequences, needs to be a fasta or fastq file.}
@@ -49,8 +49,8 @@ for (i in 1:numOfReads){
 write(Reads, rFName)
 
 #### perform alignment
-outFile  <- "./readFile_trimed.fastq"
-trim(rFName, outFile, 5,15)
+outFile  <- "./readFile_trimReaded.fastq"
+trimRead(rFName, outFile, 5,15)
 }
 
 
