@@ -111,7 +111,7 @@ END_RCPP
 }
 // trim
 void trim(String inputFile, String outputFile, int start, int end);
-RcppExport SEXP _bcSeq_trimMAGeCK(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _bcSeq_trim(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< String >::type inputFile(inputFileSEXP);
