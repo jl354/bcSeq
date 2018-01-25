@@ -1,2 +1,7 @@
 version 1.0.1
 fixed a bug for windows version that caused by pthread.
+
+version 1.0.2
+added helper functions to preprocess user files.
+"trimRead" to trim adpators.
+"uniqueBar" to extract unique barcode sequence from the library file
