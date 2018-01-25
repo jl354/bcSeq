@@ -31,7 +31,8 @@ void uniqueBar(String inputFile, String outputFile)
         while ( getline (myfile,line) )
         {
           getline (myfile,line);
-          myset.insert(line);
+          if(myset.find(line) == myset.end())
+            myset.insert(line);
           getline (myfile,line);
           getline (myfile,line);
         }
@@ -42,7 +43,8 @@ void uniqueBar(String inputFile, String outputFile)
         while ( getline (myfile,line) )
         {
           getline (myfile,line);
-          myset.insert(line);
+          if(myset.find(line) == myset.end())
+            myset.insert(line);
         }
         myfile.close(); 
       }
