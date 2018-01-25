@@ -5,7 +5,8 @@
 uniqueBar(inputFile,outputFile)
 }
 \arguments{
-\item{inputFile}{(string) filename for the library sequences, needs to be a fasta or fastq file.}
+\item{inputFile}{(string) filename for the library sequences, 
+needs to be a fasta or fastq file.}
 
 \item{outputFile}{(string) output filename.}
 }

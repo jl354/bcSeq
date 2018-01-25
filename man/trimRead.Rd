@@ -5,7 +5,8 @@
 trimRead(inputFile,outputFile, start, end)
 }
 \arguments{
-\item{inputFile}{(string) filename for the library sequences, needs to be a fasta or fastq file.}
+\item{inputFile}{(string) filename for the library sequences, 
+    needs to be a fasta or fastq file.}
 
 \item{outputFile}{(string) output filename.}
 
@@ -18,8 +19,8 @@ trimRead(inputFile,outputFile, start, end)
 \item{default}{ No objects are returned to R}
 }
 \description{
-This a function for triming reads with adaptor. The sequencing within [start, end] will be written to 
-the output file.}
+This a function for triming reads with adaptor. The sequencing 
+within [start, end] will be written to the output file.}
 
 \examples{
 #### Generate barcodes
