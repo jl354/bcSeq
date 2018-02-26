@@ -1,6 +1,6 @@
 Package: bcSeq
 Type: Package
-Title: Fast Sequence Alignment for High-Throughput shRNA and CRISPR Screens
+Title: Fast Sequence Mapping for High-Throughput shRNA and CRISPR Screens
 Version: 1.0.2
 Date: 2017-12-15
 Authors@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
