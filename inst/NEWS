@@ -1,10 +1,13 @@
 version 1.0.1
-fixed a bug for windows version that caused by pthread.
+fixed a bug for windows version that caused by pthread
 
 version 1.0.2
-added helper functions to preprocess user files.
+added helper functions to preprocess user files
 "trimRead" to trim adpators.
 "uniqueBar" to extract unique barcode sequence from the library file
 
 version 1.0.3
-change "alignment" to "mapping" in the title.
+change "alignment" to "mapping" in the title
+
+version 1.0.4
+change "for" to "in" in the title
