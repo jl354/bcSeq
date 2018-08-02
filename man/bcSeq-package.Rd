@@ -18,8 +18,8 @@ the processing time in the \code{C++} implementation.
 \tabular{ll}{
 Package: \tab bcSeq\cr
 Type: \tab Package\cr
-Version: \tab 1.3.1\cr
-Date: \tab 2018-07-09\cr
+Version: \tab 1.2.1\cr
+Date: \tab 2018-08-02\cr
 License: \tab GPL-3\cr
 }
 Please see the example function calls below, or refer to the individual

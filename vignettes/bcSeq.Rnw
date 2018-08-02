@@ -62,7 +62,7 @@ Screens}
     \author{Jiaxing Lin \and Jeremy Gresham \and Tongrong Wang \and So Young
 Kim \and James Alvarez \and Jeffrey S. Damrauer \and Scott Floyd \and Joshua
 Granek \and Andrew Allen \and Cliburn Chan \and Jichun Xie \and Kouros Owzar}
-    \date{2018-07-09}
+    \date{2018-08-02}
     \titlepage
 \end{frame}
 
