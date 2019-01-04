@@ -1,7 +1,7 @@
 Package: bcSeq
 Type: Package
 Title: Fast Sequence Mapping in High-Throughput shRNA and CRISPR Screens
-Version: 1.5.0
+Version: 1.5.1
 Date: 2018-10-17
 Authors@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
             email = "jiaxing.lin@duke.edu"), 
@@ -39,7 +39,7 @@ Description: This Rcpp-based package implements a highly efficient
     models for evaluating matching qualities. The package also
     supports multi-threading.
 License: GPL (>= 2)
-biocViews: Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
+biocViews: ImmunoOncology, Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
 URL: https://github.com/jl354/bcSeq
 Imports: Rcpp (>= 0.12.12), Matrix, Biostrings
 Depends: R (>= 3.4)
