@@ -21,3 +21,6 @@ version 1.3.2
 version 1.3.3
 + update format for NEWS
 
+version 1.5.1
++ fix error in bcSeq.Rnw
+
