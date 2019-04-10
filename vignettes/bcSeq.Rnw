@@ -332,7 +332,7 @@ ReadFile <- "./readFile.fastq"
 BarFile  <- "./libFile.fasta"
 outFile  <- "./count.csv"
 @
-<<defaultAlign_test, eval=FALSE>>>=
+<<defaultAlign_test, eval=FALSE>>=
 res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE )
 res <- read.csv(outFile, header=FALSE)
