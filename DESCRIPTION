@@ -39,7 +39,7 @@ Description: This Rcpp-based package implements a highly efficient
     models for evaluating matching qualities. The package also
     supports multi-threading.
 License: GPL (>= 2)
-biocViews: ImmunoOncology, Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
+biocViews: ImmunoOncology, Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software, ATACSeq
 URL: https://github.com/jl354/bcSeq
 Imports: Rcpp (>= 0.12.12), Matrix, Biostrings
 Depends: R (>= 3.4.2)

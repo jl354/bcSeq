@@ -362,7 +362,7 @@ bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4,count_only=FALSE )
 @
 <<clear,echo=FALSE>>=
-system("rm *csv")
+system2("rm *csv")
 @
 \end{frame}
 
@@ -402,7 +402,7 @@ information for the alignments. The current version can return the
 alignment probability between the reads and the barcodes by setting argument
 {\tt count\_only} to "FALSE".
 <<echo=FALSE>>=
-system("rm *csv")
+system2("rm *csv")
 @
 <<custAlign2,eval=FALSE>>=
 outFile  <- "./count2.csv"
@@ -411,7 +411,7 @@ bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
     gap_right = 2, ext_right = 1, pen_max = 5)
 @
 <<clear2,echo=FALSE>>=
-system("rm *fastq *fasta *csv")
+system2("rm *fastq *fasta *csv")
 @
 \end{frame}
 
