@@ -42,7 +42,7 @@ License: GPL (>= 2)
 biocViews: ImmunoOncology, Alignment, CRISPR, Sequencing, SequenceMatching, MultipleSequenceAlignment, Software
 URL: https://github.com/jl354/bcSeq
 Imports: Rcpp (>= 0.12.12), Matrix, Biostrings
-Depends: R (>= 3.5)
+Depends: R (>= 3.4.2)
 LinkingTo: Rcpp, Matrix
 BugReports: https://support.bioconductor.org
 Suggests: knitr
