@@ -325,22 +325,21 @@ write(Reads, rFName)
 \begin{frame}[fragile]{Alignment by \pkgname{}\_hamming}
 \scriptsize
 Alignment using default mapping probability and output
-<<defaultAlign>>=
+<<defaultAlign, eval=TRUE>>=
 library(Matrix)
 library(bcSeq)
 ReadFile <- "./readFile.fastq"
 BarFile  <- "./libFile.fasta"
 outFile  <- "./count.csv"
+@
+<<defaultAlign_test, eval=FALSE>>>=
 res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE )
+res <- read.csv(outFile, header=FALSE)
 @
 The function writes the read counts to a .csv file, the file name
 can be set through argument {\tt outFile}.
 \scriptsize
-<<defaultOutput>>=
-res <- read.csv(outFile, header=FALSE)
-res[1:3,]
-@
 There are two columns in the output .csv file, the first column is the
 barcode sequence, and the second column is the corresponding number of
 reads aligned to the barcode.
@@ -378,14 +377,12 @@ res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE,
     gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
     pen_max = 7)
+res <- read.csv(outFile, header=FALSE)
+res[1:3,]
 @
 The function writes the read counts to a .csv file, the file name
 can be set through argument {\tt outFile}.
 \scriptsize
-<<defaultOutput2>>=
-res <- read.csv(outFile, header=FALSE)
-res[1:3,]
-@
 There are two columns in the output .csv file, the first column is the
 barcode sequence, and the second column is the corresponding number of
 reads aligned to the barcode.
