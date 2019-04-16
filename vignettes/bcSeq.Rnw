@@ -360,9 +360,9 @@ outFile  <- "./count2.csv"
 bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4,count_only=FALSE )
 @
-<<clear,echo=FALSE>>=
-system2("rm", "*csv")
-@
+%<<clear,echo=FALSE>>=
+%system2("rm", "*csv")
+%@
 \end{frame}
 
 \subsection{Example of Using \pkgname{}\_edit}
@@ -398,9 +398,9 @@ The package also provides an option for the user to output more detailed
 information for the alignments. The current version can return the
 alignment probability between the reads and the barcodes by setting argument
 {\tt count\_only} to "FALSE".
-<<echo=FALSE>>=
-system2("rm","*csv")
-@
+%<<echo=FALSE>>=
+%system2("rm","*csv")
+%@
 <<custAlign2>>=
 outFile  <- "./count2.csv"
 @
@@ -409,9 +409,9 @@ bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = FALSE, gap_left = 2, ext_left = 1,
     gap_right = 2, ext_right = 1, pen_max = 5)
 @
-<<clear2,echo=FALSE>>=
-system2("rm","*fastq *fasta *csv")
-@
+%<<clear2,echo=FALSE>>=
+%system2("rm","*fastq *fasta *csv")
+%@
 \end{frame}
 
 \section{General Alignment Probability Model}
