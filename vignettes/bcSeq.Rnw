@@ -62,7 +62,7 @@ Screens}
     \author{Jiaxing Lin \and Jeremy Gresham \and Tongrong Wang \and So Young
 Kim \and James Alvarez \and Jeffrey S. Damrauer \and Scott Floyd \and Joshua
 Granek \and Andrew Allen \and Cliburn Chan \and Jichun Xie \and Kouros Owzar}
-    \date{2018-10-17}
+    \date{2019-04-16}
     \titlepage
 \end{frame}
 
@@ -372,7 +372,7 @@ system2("rm", "*csv")
 \begin{frame}[fragile]{Alignment by \pkgname{}\_edit}
 \scriptsize
 Alignment using default mapping probability and output format
-<<defaultAlign2>>=
+<<defaultAlign2, eval=FALSE>>=
 res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE,
     gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
@@ -401,8 +401,10 @@ alignment probability between the reads and the barcodes by setting argument
 <<echo=FALSE>>=
 system2("rm","*csv")
 @
-<<custAlign2,eval=FALSE>>=
+<<custAlign2>>=
 outFile  <- "./count2.csv"
+@
+<<custAlign2_ex, eval=FALSE>>=
 bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = FALSE, gap_left = 2, ext_left = 1,
     gap_right = 2, ext_right = 1, pen_max = 5)
@@ -493,11 +495,13 @@ and barcode, \texttt{pen\_val} is a vector containing total penalties for the
 reads and barcodes in the same order. \texttt{userProb} is a way for the user
 to control which alignments are considered.
 \scriptsize
-<<comtomizeP,eval=FALSE>>=
+<<comtomizePF>>=
 customizeP <- function(max_pen, prob, pen_val)
 {
     prob * (1 - log(2) + log(1 + max_pen / (max_pen + pen_val) ) )
 }
+@
+<<comtomizeP,eval=FALSE>>=
 bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = TRUE, userProb = comstomizeP,
     gap_left = 2, ext_left = 1, gap_right = 2,
@@ -518,7 +522,7 @@ the default model.
 The customized \texttt{userProb} function can also be defined using sounceCpp
 in a non-vectorized fashion.  The function signature is
 Rcpp::NumericVector(double, Rcpp::NumericVector, Rcpp::NumericVector).
-<<comtomizeP2,eval=FALSE>>=
+<<comtomizeP2F>>=
 library(Rcpp)
 sourceCpp(code='
 #include<Rcpp.h>
@@ -531,7 +535,8 @@ NumericVector cpp_fun(double m, NumericVector prob, NumericVector pen){
     }
     return ret;
 }')
-
+@
+<<comtomizeP2,eval=FALSE>>=
 bcSeq_edit(sampleFile, libFile, outFile, misMatch = 2, tMat = NULL,
     numThread = 4, count_only = TRUE, userProb = cpp_fun,
     gap_left = 2, ext_left = 1, gap_right = 2,
