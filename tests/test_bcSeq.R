@@ -35,10 +35,10 @@ BarFile  <- "./libFile.fasta"
 outFile  <- "./countH.csv"
 
 #### with default output for bcSeq_hamming
-res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 2, count_only = TRUE )
-res <- read.csv(outFile, header=FALSE)
-res
+#res <- bcSeq_hamming(ReadFile, BarFile, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 2, count_only = TRUE )
+#res <- read.csv(outFile, header=FALSE)
+#res
 
 #### with return of alignment probability matrix to R
 #outFile  <- "./countH2.csv"
@@ -48,12 +48,12 @@ res
 
 #### with default output for bcSeq_edit
 outFile  <- "./countE.csv"
-res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 2, count_only = TRUE,
-    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
-    pen_max = 7)
-res <- read.csv(outFile, header=FALSE)
-res
+#res <- bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 2, count_only = TRUE,
+#    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+#    pen_max = 7)
+#res <- read.csv(outFile, header=FALSE)
+#res
 
 #### with return of alignment probability matrix to R
 #outFile  <- "./countE2.csv"
@@ -69,7 +69,7 @@ comstomizeP <- function(m, x, y)
     x * (1 - log(2) + log(1 + m / (m + y) ) )
 }
 outFile = "comstomizeP.csv"
-bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
-    tMat = NULL, numThread = 2, count_only = TRUE,
-    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
-    pen_max = 7, userProb = comstomizeP)
+#bcSeq_edit(ReadFile, BarFile, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 2, count_only = TRUE,
+#    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+#    pen_max = 7, userProb = comstomizeP)
