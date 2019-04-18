@@ -108,10 +108,10 @@ write(Reads, rFName)
 
 #### perform alignment 
 outFile  <- "./count_edit.csv"
-res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
-    tMat = NULL, numThread = 4, count_only = TRUE, userProb = NULL,
-    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
-    pen_max = 7)
+#res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 4, count_only = TRUE, userProb = NULL,
+#    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+#    pen_max = 7)
 
 #### The user defined probability model function is a modeling 
 #### of the alignment probability and the penalty encounted 
@@ -152,8 +152,8 @@ useP <-function(m, val, pens) { val * (1 - log(2) + log(1 + m / (m + pens) ) ) }
 #    return out;
 #}')
 outFile  <- "./count_edit_2.csv"
-res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
-    tMat = NULL, numThread = 4, count_only = TRUE, userProb = useP,
-    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
-    pen_max = 7)
+#res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 4, count_only = TRUE, userProb = useP,
+#    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+#    pen_max = 7)
 }

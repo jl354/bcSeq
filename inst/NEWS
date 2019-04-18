@@ -24,4 +24,7 @@ version 1.3.3
 version 1.5.3
 + fix bugs in vignette for bioconductor new platform
 
+version 1.5.7
++ fix bugs in the examples
+
 

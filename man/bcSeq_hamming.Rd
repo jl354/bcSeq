@@ -83,6 +83,6 @@ write(Reads, rFName)
 
 #### perform alignment
 outFile  <- "./count_hamming.csv"
-res <- bcSeq_hamming(rFName, lFName, outFile, misMatch = 2,
-    tMat = NULL, numThread = 1, count_only = TRUE)
+#res <- bcSeq_hamming(rFName, lFName, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 1, count_only = TRUE)
 }
