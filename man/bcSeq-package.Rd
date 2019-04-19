@@ -72,8 +72,8 @@ outFile  <- "./counthamming.csv"
 res <- bcSeq_hamming(rFName, lFName, outFile, misMatch = 2,
     tMat = NULL, numThread = 4, count_only = TRUE)
 outFile  <- "./countedit.csv"
-res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
-    tMat = NULL, numThread = 4, count_only = TRUE,
-    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
-    pen_max = 7, userProb = NULL) 
+#res <- bcSeq_edit(rFName, lFName, outFile, misMatch = 2,
+#    tMat = NULL, numThread = 4, count_only = TRUE,
+#    gap_left = 2, ext_left = 1, gap_right = 2, ext_right = 1,
+#    pen_max = 7, userProb = NULL) 
 }
