@@ -13,7 +13,6 @@
 
 #include "../alignments/alignment.hpp"
 #include "Node.h"
-#include "NodePool.h"
 
 // typedef tuple<int, int, double, double> res_t;
 typedef tuple<int, int, shared_ptr<SA>, double> res_t;
@@ -21,8 +20,7 @@ typedef tuple<int, int, shared_ptr<SA>, double> res_t;
 using namespace std;
 
 struct state_t {
-  const Pool& pool;
-  int cur;
+  Node *cur;
   int seqIdx;
   int readIdx;
   int misMatch;
@@ -32,93 +30,89 @@ struct state_t {
   vector<res_t> &results;
   shared_ptr<SA> align;
 
-  bool match() { return seq[seqIdx] == pool[cur].baseType; }
+  auto match() -> bool { return seq[seqIdx] == cur->getBase(); }
 
-  double phred() { return cErr[seqIdx]; }
+  auto phred() -> double { return cErr[seqIdx]; }
 
-  bool leaf() { return pool[cur].isLeaf(); }
+  auto leaf() -> bool { return cur->isLeaf(); }
 
-  int child(int i) { return pool[cur].children[i]; }
+  template <typename T> auto child(T &&t) -> Node * { return cur->getChild(t); }
 
-  template <typename T, typename... Args> void add(Args &&... args) {
+  template <typename T, typename... Args> auto add(Args &&... args) -> void {
     align = make_alignment<T>(align, args...);
   }
 
-  bool end() { return static_cast<std::size_t>(seqIdx) == seq.size() - 1; }
+  auto end() -> bool { return seqIdx == seq.size() - 1; }
 
-  void addResult() {
-    results.emplace_back(readIdx, pool[cur].leaf, align, 0.0);
+  auto addResult() -> void {
+    results.emplace_back(readIdx, dynamic_cast<Leaf *>(cur)->idx, align, 0.0);
   }
 };
 
-struct Trie {
-  Pool pool;
-  int root;
+class Trie {
+private:
+  unique_ptr<Node> root;
   map<string, double> tMat;
   int corLength;
   array<double, 4> _penalties;
   double pen_max;
+
   mutex mut;
-  std::vector<res_t> results;
 
-  double getMatEle(const string &read, const int seqIdx);
+  auto getMatEle(const string &read, const int seqIdx) -> double;
 
-  void addSeq(const string &seq, const int idx);
+  auto addSeq(const string &seq, const int idx) -> void;
 
-  void hammingSearch(state_t state);
+  auto hammingSearch(state_t state) -> void;
 
-  void editSearch(state_t state, bool ind);
+  auto editSearch(state_t state, bool ind) -> void;
 
-  void indel(state_t state, bool left);
+  auto indel(state_t state, bool left) -> void;
 
-  void extend(state_t state, bool left);
+  auto extend(state_t state, bool left) -> void;
+  // auto lev2Leaf(state_t state) -> void;
 
-Trie() : pool(), root(pool.createNode('N', 0)), results() {}
+public:
+  Trie() : root(new Node()) {}
 
   Trie(double gap, double ext, double max)
-  : pool(), root(pool.createNode('N', 0)), _penalties{{gap, ext, gap, ext}}, pen_max(max), results() {}
+      : root(new Node()), _penalties{{gap, ext, gap, ext}}, pen_max(max) {}
 
   Trie(double gap0, double ext0, double gap1, double ext1, double max)
-  : pool(), root(pool.createNode('N', 0)), _penalties{{gap0, ext0, gap1, ext1}}, pen_max(max), results() {}
+      : root(new Node()), _penalties{{gap0, ext0, gap1, ext1}}, pen_max(max) {}
 
   ~Trie() {}
 
-  void add_results(std::vector<res_t>& results);
-  
-  array<double, 4> &penalties() { return _penalties; }
+  auto penalties() -> array<double, 4> & { return _penalties; }
 
-  double max() { return pen_max; }
+  auto max() -> double { return pen_max; }
 
-  bool bounded() {
+  auto bounded() -> bool {
     return pen_max != 0 &&
            (_penalties[0] || _penalties[1] || _penalties[2] || _penalties[3]);
   }
 
-  void fromLibrary(const vector<string> &library);
+  auto fromLibrary(const vector<string> &library) -> void;
 
-  bool setTMat(const Rcpp::StringVector tMatSeq,
-               const Rcpp::NumericVector tMatProb);
+  auto setTMat(const Rcpp::StringVector tMatSeq,
+               const Rcpp::NumericVector tMatProb) -> bool;
 
-  void count(vector<res_t> &results, vector<double> &countTable);
+  auto count(vector<res_t> &results, vector<double> &countTable) -> void;
 
-  void count(vector<res_t> &results, vector<double> &countTable,
-             std::ostream &out);
+  auto count(vector<res_t> &results, vector<double> &countTable,
+             std::ostream &out) -> void;
 
-  template <typename... Args> void hamming(Args &&... args) {
+  template <typename... Args> auto hamming(Args &&... args) -> void {
     for (auto i = 0; i < 4; i++) {
-      if(pool[root].children[i] != -1){
-        auto state = state_t{pool, pool[root].children[i], args..., shared_ptr<SA>()};
-        hammingSearch(state);
-      }
+      auto state = state_t{root->getChild(i), args..., shared_ptr<SA>()};
+      hammingSearch(state);
     }
   }
 
-  template <typename... Args> void edit(Args &&... args) {    
+  template <typename... Args> auto edit(Args &&... args) -> void {
     for (auto i = 0; i < 4; i++) {
-      if(pool[root].children[i] != -1){
-        auto state = state_t{pool, pool[root].children[i], args..., shared_ptr<SA>()};
-        editSearch(state, false);
-      }
+      auto state = state_t{root->getChild(i), args..., shared_ptr<SA>()};
+      editSearch(state, false);
     }
   }
 };

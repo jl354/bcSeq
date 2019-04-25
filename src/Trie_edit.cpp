@@ -37,7 +37,7 @@ auto Trie::editSearch(state_t state, bool ind) -> void {
   for (auto i = 0; i < 4; i++) {
     s.cur = state.child(i);
 
-    if (s.cur != -1) {
+    if (s.cur != nullptr) {
       editSearch(s, false);
     }
   }
@@ -67,10 +67,10 @@ auto Trie::indel(state_t state, bool left) -> void {
     s.pen += _penalties[2];
     s.add<Deletion>();
 
-    for (auto i = 0; i < 4; ++i) // add gap in sequence
+    for (auto i = 0; i < 4; i++) // add gap in sequence
     {
       s.cur = state.child(i);
-      if (s.cur != -1) {
+      if (s.cur != nullptr) {
         if (!state.end()) {
           editSearch(s, true);
         }
@@ -118,10 +118,10 @@ auto Trie::extend(state_t state, bool left) -> void {
     s.pen += _penalties[3];
     s.add<D_Extension>();
 
-    for (auto i = 0; i < 4; ++i) // add gap in sequence
+    for (auto i = 0; i < 4; i++) // add gap in sequence
     {
       s.cur = state.child(i);
-      if (s.cur != -1) {
+      if (s.cur != nullptr) {
         if (!state.end()) {
           editSearch(s, true);
         }

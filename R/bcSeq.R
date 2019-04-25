@@ -6,7 +6,7 @@
     if (!file.exists(libFile)) 
         stop(paste0(libFile, " does not exist!"))
     if (file.exists(outFile)) 
-        stop(paste0(outFile, " exists, please specify
+        stop(paste0(outFile, " exists plese specify
         another name."))
     
     tMatSeq <- c("default")
@@ -44,7 +44,7 @@
     if (!file.exists(libFile)) 
         stop(paste0(libFile, " does not exist!"))
     if (file.exists(outFile)) 
-        stop(paste0(outFile, " exists, please specify another name."))
+        stop(paste0(outFile, " exists plese specify another name."))
     
     tMatSeq <- c("default")
     tMatProb <- c(0.3333)

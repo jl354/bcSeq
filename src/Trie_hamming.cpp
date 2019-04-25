@@ -30,8 +30,8 @@ auto Trie::hammingSearch(state_t state) -> void {
   s.seqIdx += 1;
 
   for (auto i = 0; i < 4; i++) {
-    auto child = state.child(i);
-    if (child != -1) {
+    auto *child = state.child(i);
+    if (child != nullptr) {
       s.cur = child;
       hammingSearch(s);
     }
