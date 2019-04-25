@@ -30,4 +30,7 @@ version 1.5.7
 version 1.5.9
 + fix bugs in the examples
 
+version 1.5.11
++ using new data structure for the library to speed up the mapping process.
+
 
