@@ -7,25 +7,14 @@ auto Trie::addSeq(const string &seq, const int idx) -> void {
     return;
   }
 
-  auto *cur = root.get();
+  auto cur = root;
+  for (auto i = seq.begin(); i < seq.end(); ++i) {
+    auto child = pool[cur].getChild(*i);
 
-  for (auto i = seq.begin(); i < seq.end(); i++) {
-    auto *child = cur->getChild(*i);
-
-    if (child != nullptr) {
+    if (child != -1) {
       cur = child;
     } else {
-      if (i == seq.end() - 1) {
-        auto tmp = make_leaf(*i, idx);
-        auto *next = tmp.get();
-        cur->addChild(tmp);
-        cur = next;
-      } else {
-        auto tmp = make_node(*i);
-        auto *next = tmp.get();
-        cur->addChild(tmp);
-        cur = next;
-      }
+      cur = pool.add_child(cur, *i, i + 1 == seq.end() ? idx : -1);
     }
   }
 }
@@ -35,6 +24,8 @@ auto Trie::fromLibrary(const vector<string> &library) -> void {
   for (auto x = library.begin(); x < library.end(); x++) {
     addSeq(*x, x - library.begin());
   }
+
+  Rcpp::Rcout << "Trie(" << pool.count << ") created" << std::endl;
 }
 
 // Method for creating count table for barcodes in the library
@@ -42,8 +33,6 @@ auto Trie::fromLibrary(const vector<string> &library) -> void {
 auto Trie::count(vector<res_t> &results, vector<double> &countTable) -> void {
   // sort by read then probability
   sort(results.begin(), results.end(), [](const res_t &x, const res_t &y) {
-    // return get<0>(x) < get<0>(y) || (get<0>(x) == get<0>(y) && get<2>(x) <
-    // get<2>(y));
     return get<0>(x) < get<0>(y) ||
            (get<0>(x) == get<0>(y) && get<2>(x)->value() < get<2>(y)->value());
   });
@@ -60,12 +49,17 @@ auto Trie::count(vector<res_t> &results, vector<double> &countTable) -> void {
   }
 }
 
+
+void Trie::add_results(std::vector<res_t>& res) {
+  lock_guard<mutex> lock(mut);
+  std::move(res.begin(), res.end(), back_inserter(results));
+}
+
+
 auto Trie::count(vector<res_t> &results, vector<double> &countTable,
                  std::ostream &out) -> void {
   // sort by read then probability
   sort(results.begin(), results.end(), [](const res_t &x, const res_t &y) {
-    // return get<0>(x) < get<0>(y) || (get<0>(x) == get<0>(y) && get<2>(x) <
-    // get<2>(y));
     return get<0>(x) < get<0>(y) ||
            (get<0>(x) == get<0>(y) && get<2>(x)->value() < get<2>(y)->value());
   });
@@ -102,7 +96,7 @@ auto Trie::setTMat(const Rcpp::StringVector tMatSeq,
 
     for (int i = 0; i < tMatSize; i++) {
       MatSeq = tMatSeq[i];
-      if (MatSeq.length() != corLength) {
+      if (MatSeq.length() != (std::size_t)corLength) {
         Rcpp::Rcout << "Error: All tMatSeq entries must be the same length"
                     << endl;
         return false;
