@@ -33,4 +33,9 @@ version 1.5.9
 version 1.5.11
 + using new data structure for the library to speed up the mapping process.
 
+version 1.7.0
++ using array back structure for the library to speed up the mapping process
+
+
+
 
