@@ -18,7 +18,6 @@ void uniqueBar(String inputFile, String outputFile)
        return;
     }
 
-    int length = 0;
     std::unordered_set<std::string> myset;
     string line;
     ifstream myfile (inFile);

@@ -19,6 +19,29 @@ auto default_transform(double max, double pr, double penalty) -> double {
   return pr * (1.0 - log(2.0) + log1p(max / (max + penalty)));
 }
 
+
+
+/*
+*  find maxima per mapped barcode for a given read
+*/
+auto extract(vector<res_t>::iterator start, vector<res_t>::iterator end,
+             vector<res_t> &keep, double m, array<double, 4> &pen,
+             Function tForm) -> void {
+  NumericVector val, pens, out;
+  for (auto x = start; x < end; x++) {
+    val.push_back(get<2>(*x)->value());
+    pens.push_back(get<2>(*x)->penalty(pen));
+  }
+  out = tForm(m, val, pens);
+
+  // take max over barcodes for this read
+  auto mx = max_element(out.begin(), out.end());
+  keep.push_back(*(start + (mx - out.begin())));
+  get<3>(keep.back()) = *mx;
+}
+
+
+
 /*
 *  Takes maximum over a given read's alignments
 *  to a given barcode, replaces the current set of results
@@ -53,40 +76,22 @@ void clean(Trie &trie, vector<res_t>::iterator start, vector<res_t> &results) {
   results.erase(end, results.end());
 }
 
-/*
-*  find maxima per mapped barcode for a given read
-*/
-auto extract(vector<res_t>::iterator start, vector<res_t>::iterator end,
-             vector<res_t> &keep, double m, array<double, 4> &pen,
-             Function tForm) -> void {
-  NumericVector val, pens, out;
-  for (auto x = start; x < end; x++) {
-    val.push_back(get<2>(*x)->value());
-    pens.push_back(get<2>(*x)->penalty(pen));
-  }
-  out = tForm(m, val, pens);
 
-  // take max over barcodes for this read
-  auto mx = max_element(out.begin(), out.end());
-  keep.push_back(*(start + (mx - out.begin())));
-  get<3>(keep.back()) = *mx;
-}
-
-void clean(Trie &trie, vector<res_t> &results, Function tForm) {
+void clean(Trie &trie, Function tForm) {
   auto keep = vector<res_t>();
 
   auto m = trie.max();
   auto pen = trie.penalties();
 
-  sort(results.begin(), results.end(),
+  sort(trie.results.begin(), trie.results.end(),
        [](const res_t &x, const res_t &y) { return get<0>(x) < get<0>(y); });
 
   // loop over all results
   // whenever we reach a read boundary, find barcode boundaries
   // and take maximum over the barcode
-  auto last = results.begin();
-  for (auto x = results.begin(); x < results.end(); x++) {
-    if (x + 1 == results.end() || get<0>(*(x + 1)) != get<0>(*last)) {
+  auto last = trie.results.begin();
+  for (auto x = trie.results.begin(); x < trie.results.end(); ++x) {
+    if (x + 1 == trie.results.end() || get<0>(*(x + 1)) != get<0>(*last)) {
       sort(last, x + 1, by_bc);
 
       // find barcode boundaries
@@ -102,13 +107,14 @@ void clean(Trie &trie, vector<res_t> &results, Function tForm) {
     }
   }
 
-  results = keep;
+  trie.results = keep;
 }
+
 
 void user_alignment(Trie &trie, vector<string> &sequence,
                     vector<string> &phredScore, int misMatch,
                     vector<double> &countTable, int L, int R,
-                    vector<res_t> &all_res, mutex &mut, bool count_only) {
+                    bool count_only) {
   auto cError = vector<double>();
   auto results = std::vector<res_t>();
 
@@ -119,14 +125,12 @@ void user_alignment(Trie &trie, vector<string> &sequence,
   }
 
   // must collect all results so we can call R code on it
-  lock_guard<mutex> l(mut);
-  move(results.begin(), results.end(), back_inserter(all_res));
+  trie.add_results(results);
 }
 
 void alignment(Trie &trie, vector<string> &sequence, vector<string> &phredScore,
                int misMatch, vector<double> &countTable, int L, int R,
-               vector<res_t> &all_res, mutex &mut, bool count_only,
-               ostream &table_stream, bool detail_info) {
+               ostream &table_stream, bool count_only, bool detail_info) {
   auto cError = vector<double>();
   auto results = std::vector<res_t>();
 
@@ -145,16 +149,14 @@ void alignment(Trie &trie, vector<string> &sequence, vector<string> &phredScore,
     trie.count(results, countTable, table_stream);
 
   if (!count_only) {
-    lock_guard<mutex> l(mut);
-    move(results.begin(), results.end(), back_inserter(all_res));
+    trie.add_results(results);
   }
 }
 
 void alignmentH(Trie &trie, vector<string> &sequence,
                 vector<string> &phredScore, int misMatch,
                 vector<double> &countTable, int L, int R,
-                vector<res_t> &all_res, mutex &mut, bool count_only,
-                ostream &table_stream, bool detail_info) {
+                ostream &table_stream, bool count_only, bool detail_info) {
   auto cError = vector<double>();
   auto results = std::vector<res_t>();
 
@@ -173,8 +175,7 @@ void alignmentH(Trie &trie, vector<string> &sequence,
       get<3>(x) = get<2>(x)->value();
     }
 
-    lock_guard<mutex> l(mut);
-    move(results.begin(), results.end(), back_inserter(all_res));
+    trie.add_results(results);
   }
 }
 
@@ -207,9 +208,6 @@ SEXP CRISPR_matching(String sampleFile, String libFile, String outFile,
   // create trie with library elements
   trie.fromLibrary(library);
 
-  mutex mut;
-  vector<res_t> all_res;
-
   std::string table_out = outFile;
   std::ofstream table_stream(table_out + ".txt");
 
@@ -228,14 +226,13 @@ SEXP CRISPR_matching(String sampleFile, String libFile, String outFile,
       int R = min((i + 1) * nr_item_per_thread, nr_item);
       threads.emplace_back(match, std::ref(trie), std::ref(sequence),
                            std::ref(phredScore), misMatch, std::ref(countTable),
-                           i * nr_item_per_thread, R, std::ref(all_res),
-                           std::ref(mut), count_only, std::ref(table_stream),
+                           i * nr_item_per_thread, R, std::ref(table_stream), count_only,
                            detail_info);
     }
 
     int R = min(nr_item_per_thread, nr_item);
-    match(trie, sequence, phredScore, misMatch, countTable, 0, R, all_res, mut,
-          count_only, table_stream, detail_info);
+    match(trie, sequence, phredScore, misMatch, countTable, 0, R,
+          table_stream, count_only, detail_info);
 
     for (auto &t : threads) {
       t.join();
@@ -247,7 +244,7 @@ SEXP CRISPR_matching(String sampleFile, String libFile, String outFile,
   }
 
   if (detail_info)
-    trie.count(all_res, countTable, table_stream);
+    trie.count(trie.results, countTable, table_stream);
 
   Rcpp::Rcout << "Compiling results\n";
 
@@ -259,7 +256,7 @@ SEXP CRISPR_matching(String sampleFile, String libFile, String outFile,
     IntegerVector bcIdx;
     auto prob = vector<double>();
 
-    for (auto &x : all_res) {
+    for (auto &x : trie.results) {
       readIdx.push_back(std::get<0>(x));
       bcIdx.push_back(std::get<1>(x));
       prob.push_back(std::get<3>(x));
@@ -304,9 +301,6 @@ SEXP CRISPR_user_matching(String sampleFile, String libFile, String outFile,
   // create trie with library elements
   trie.fromLibrary(library);
 
-  mutex mut;
-  vector<res_t> all_res;
-
   // run alignment
   try {
 
@@ -322,13 +316,11 @@ SEXP CRISPR_user_matching(String sampleFile, String libFile, String outFile,
       int R = min((i + 1) * nr_item_per_thread, nr_item);
       threads.emplace_back(user_alignment, std::ref(trie), std::ref(sequence),
                            std::ref(phredScore), misMatch, std::ref(countTable),
-                           i * nr_item_per_thread, R, std::ref(all_res),
-                           std::ref(mut), count_only);
+                           i * nr_item_per_thread, R, count_only);
     }
 
     int R = min(nr_item_per_thread, nr_item);
-    user_alignment(trie, sequence, phredScore, misMatch, countTable, 0, R,
-                   all_res, mut, count_only);
+    user_alignment(trie, sequence, phredScore, misMatch, countTable, 0, R, count_only);
 
     for (auto &t : threads) {
       t.join();
@@ -339,9 +331,8 @@ SEXP CRISPR_user_matching(String sampleFile, String libFile, String outFile,
     return R_NilValue;
   }
 
-  clean(trie, all_res, tForm);
-
-  trie.count(all_res, countTable);
+  clean(trie, tForm);
+  trie.count(trie.results, countTable);
 
   Rcpp::Rcout << "Compiling results\n";
 
@@ -353,7 +344,7 @@ SEXP CRISPR_user_matching(String sampleFile, String libFile, String outFile,
     IntegerVector bcIdx;
     auto prob = vector<double>();
 
-    for (auto &x : all_res) {
+    for (auto &x : trie.results) {
       readIdx.push_back(std::get<0>(x));
       bcIdx.push_back(std::get<1>(x));
       prob.push_back(std::get<3>(x));
@@ -413,9 +404,6 @@ SEXP CRISPR_matching_DNAString(
   // create trie with library elements
   trie.fromLibrary(library);
 
-  mutex mut;
-  vector<res_t> all_res;
-
   std::string table_out = outFile;
   std::ofstream table_stream(table_out + ".txt");
 
@@ -434,14 +422,12 @@ SEXP CRISPR_matching_DNAString(
       int R = min((i + 1) * nr_item_per_thread, nr_item);
       threads.emplace_back(match, std::ref(trie), std::ref(sequence),
                            std::ref(phredScore), misMatch, std::ref(countTable),
-                           i * nr_item_per_thread, R, std::ref(all_res),
-                           std::ref(mut), count_only, std::ref(table_stream),
-                           detail_info);
+                           i * nr_item_per_thread, R, 
+                           std::ref(table_stream), count_only, detail_info);
     }
 
     int R = min(nr_item_per_thread, nr_item);
-    match(trie, sequence, phredScore, misMatch, countTable, 0, R, all_res, mut,
-          count_only, table_stream, detail_info);
+    match(trie, sequence, phredScore, misMatch, countTable, 0, R, table_stream, count_only, detail_info);
 
     for (auto &t : threads) {
       t.join();
@@ -453,7 +439,7 @@ SEXP CRISPR_matching_DNAString(
   }
 
   if (detail_info)
-    trie.count(all_res, countTable, table_stream);
+    trie.count(trie.results, countTable, table_stream);
 
   Rcpp::Rcout << "Compiling results\n";
 
@@ -465,7 +451,7 @@ SEXP CRISPR_matching_DNAString(
     IntegerVector bcIdx;
     auto prob = vector<double>();
 
-    for (auto &x : all_res) {
+    for (auto &x : trie.results) {
       readIdx.push_back(std::get<0>(x));
       bcIdx.push_back(std::get<1>(x));
       prob.push_back(std::get<3>(x));
@@ -510,10 +496,6 @@ SEXP CRISPR_user_matching_DNAString(
 
   Trie trie(gap_left, ext_left, gap_right, ext_right, pen_max);
 
-  // read samples, library, and setup trie's tMat
-  // if( !(readSamples(sampleFile, sequence, sequence_ids, phredScore) &&
-  //      trie.setTMat(tMatSeq, tMatProb)                             &&
-  //      readLibrary(library, library_ids, libFile)                    ) )
   if (trie.setTMat(tMatSeq, tMatProb)) {
     return R_NilValue;
   }
@@ -522,9 +504,6 @@ SEXP CRISPR_user_matching_DNAString(
 
   // create trie with library elements
   trie.fromLibrary(library);
-
-  mutex mut;
-  vector<res_t> all_res;
 
   // run alignment
   try {
@@ -541,13 +520,11 @@ SEXP CRISPR_user_matching_DNAString(
       int R = min((i + 1) * nr_item_per_thread, nr_item);
       threads.emplace_back(user_alignment, std::ref(trie), std::ref(sequence),
                            std::ref(phredScore), misMatch, std::ref(countTable),
-                           i * nr_item_per_thread, R, std::ref(all_res),
-                           std::ref(mut), count_only);
+                           i * nr_item_per_thread, R, count_only);
     }
 
     int R = min(nr_item_per_thread, nr_item);
-    user_alignment(trie, sequence, phredScore, misMatch, countTable, 0, R,
-                   all_res, mut, count_only);
+    user_alignment(trie, sequence, phredScore, misMatch, countTable, 0, R, count_only);
 
     for (auto &t : threads) {
       t.join();
@@ -558,9 +535,8 @@ SEXP CRISPR_user_matching_DNAString(
     return R_NilValue;
   }
 
-  clean(trie, all_res, tForm);
-
-  trie.count(all_res, countTable);
+  clean(trie, tForm);
+  trie.count(trie.results, countTable);
 
   Rcpp::Rcout << "Compiling results\n";
 
@@ -572,7 +548,7 @@ SEXP CRISPR_user_matching_DNAString(
     IntegerVector bcIdx;
     auto prob = vector<double>();
 
-    for (auto &x : all_res) {
+    for (auto &x : trie.results) {
       readIdx.push_back(std::get<0>(x));
       bcIdx.push_back(std::get<1>(x));
       prob.push_back(std::get<3>(x));
