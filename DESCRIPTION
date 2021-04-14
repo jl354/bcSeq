@@ -1,7 +1,7 @@
 Package: bcSeq
 Type: Package
 Title: Fast Sequence Mapping in High-Throughput shRNA and CRISPR Screens
-Version: 1.7.1
+Version: 1.7.2
 Date: 2019-07-18
 Authors@R: c(person("Jiaxing","Lin", role = c("aut", "cre"), 
             email = "jiaxing.lin@duke.edu"), 
@@ -28,7 +28,7 @@ Author: Jiaxing Lin [aut, cre],
         Joshua Granek [ctb], 
         Andrew Allen [ctb],
         Cliburn Chan [ctb]
-Maintainer: Jiaxing Lin <jiaxing.lin@duke.edu>
+Maintainer: Alexander Sibley <dcibioinformatics@duke.edu>
 Description: This Rcpp-based package implements a highly efficient
     data structure and algorithm for performing alignment of short
     reads from CRISPR or shRNA screens to reference barcode library. 
